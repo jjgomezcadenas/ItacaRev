@@ -1,0 +1,229 @@
+{
+  "metadata": {
+    "n_arms": 2,
+    "numeric_solver": true,
+    "drag_model": false
+  },
+  "fixed_parameters": {
+    "R_blade_m": 1.6,
+    "chord_m": 0.16,
+    "m_blade_kg": 0.25,
+    "m_plate_kg": 0.25,
+    "tau_motor_Nm": 60.0,
+    "z_obs_m": 0.005,
+    "z_obs_mm": 5.0,
+    "t_obs_s": 0.5,
+    "P_Pa": 1500000.0,
+    "P_bar": 15.0,
+    "T_K": 300.0,
+    "Delta_D_m": 0.1
+  },
+  "carrier_parameters": {
+    "F_actuator_N": 20.0,
+    "m_carrier_kg": 0.25,
+    "Cd_carrier": 0.1,
+    "r0_carrier_m": 0.8,
+    "carrier_width_m": 0.16,
+    "carrier_height_m": 0.005,
+    "carrier_frontal_area_m2": 0.0008
+  },
+  "gas_properties": {
+    "rho_kg_m3": 78.95718065912918,
+    "mu_Pa_s": 2.32e-05,
+    "nu_m2_s": 2.938301470028182e-07,
+    "c_s_m_s": 177.94024659436187,
+    "gamma": 1.6666666666666667
+  },
+  "phase1_kinematics": {
+    "sweep_angle_rad": 3.141592653589793,
+    "sweep_angle_deg": 180.0,
+    "I_blades_kg_m2": 0.42666666666666675,
+    "I_plates_kg_m2": 0.32000000000000006,
+    "I_total_kg_m2": 0.7466666666666668,
+    "t_rot_s": 0.39545100958107565,
+    "t_rot_ms": 395.45100958107565,
+    "omega_max_rad_s": 15.888656634953927,
+    "V_tip_max_m_s": 25.421850615926285,
+    "method": "analytical"
+  },
+  "phase1_flow_regime": {
+    "Ma_tip": 0.14286734509185395,
+    "Re_tip": 13843018.288076453,
+    "compressible": false,
+    "turbulent": true
+  },
+  "phase1_boundary_layer": {
+    "delta_m": 0.002208388862420088,
+    "delta_mm": 2.208388862420088,
+    "theta_m": 0.00021470447273528632,
+    "delta_star_m": 0.000276048607802511,
+    "H": 1.2857142857142858,
+    "Cf": 0.002208388862420088,
+    "u_tau_m_s": 0.8447533810056127,
+    "Cd": 0.0045684573438369,
+    "Re_c": 13843018.288076453
+  },
+  "geometry": {
+    "t_max_m": 0.0192,
+    "t_max_mm": 19.2,
+    "z_blade_top_mm": 9.6,
+    "z_BL_top_mm": 11.808388862420086,
+    "gap_mm": 2.791611137579912,
+    "R_cyl_m": 1.6500000000000001,
+    "tip_gap_mm": 50.00000000000004
+  },
+  "phase1_eddy_diffusion": {
+    "method": "numerical",
+    "nu_t_outer_m2_s": 0.00012631799646521745,
+    "nu_t_over_nu": 429.901416698423,
+    "u_prime_m_s": 1.2710925307963143,
+    "t_eddy_s": 0.001737394256448487,
+    "t_eddy_ms": 1.737394256448487,
+    "t_decay_s": 0.003474788512896974,
+    "t_decay_ms": 3.474788512896974,
+    "ell_turb_m": 0.0006625166587260263,
+    "ell_turb_mm": 0.6625166587260264,
+    "ell_mol_m": 0.0003832950214931171,
+    "ell_mol_mm": 0.3832950214931171,
+    "max_reach_m": 0.0032542005426392314,
+    "max_reach_mm": 3.2542005426392313,
+    "mom_initial": 0.006951049428260889,
+    "mom_final": 0.004263213698831052,
+    "mom_fraction": 0.6133194336812078,
+    "u_at_obs_m_s": 3.1732884330048736e-07,
+    "u_at_obs_cm_s": 3.173288433004874e-05,
+    "reaches_z_obs": false
+  },
+  "phase1_velocity_profile": {
+    "z_mm": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      15
+    ],
+    "u_m_s": [
+      0.0,
+      2.4059161219933967,
+      1.3342130421185958,
+      0.14430788387004256,
+      0.0010221892460146977,
+      3.1732884330048736e-07,
+      3.2617404798113405e-12,
+      1.1033097649832568e-18,
+      1.398688219864684e-26,
+      5.117318839787351e-47,
+      9.082129383791687e-125
+    ],
+    "u_cm_s": [
+      0.0,
+      240.59161219933966,
+      133.4213042118596,
+      14.430788387004256,
+      0.10221892460146977,
+      3.173288433004874e-05,
+      3.2617404798113406e-10,
+      1.1033097649832568e-16,
+      1.3986882198646841e-24,
+      5.1173188397873504e-45,
+      9.082129383791687e-123
+    ]
+  },
+  "phase1_bulk_swirl": {
+    "torque_Nm": 47.74253594931378,
+    "J_angular_Nm_s": 18.879834041116933,
+    "gap_mm": 2.791611137579912,
+    "t_visc_s": 26.522441018911056,
+    "delta_E_mol_mm": 0.19231784511616734,
+    "w_E_mol_um_s": 1527.8361029125172,
+    "delta_E_turb_mm": 3.9875305402497716,
+    "w_E_turb_cm_s": 3.167825178771048,
+    "z_Ekman_turb_mm": 0.1100752254205944,
+    "t_turb_life_ms": 3.474788512896974
+  },
+  "phase1_potential_flow": {
+    "t_max_mm": 19.2,
+    "blockage_ratio": 0.38399999999999995,
+    "w_disp_during_sweep_m_s": 19.997249511469498,
+    "t_acoustic_ms": 8.991782526003856
+  },
+  "phase1_pressure_pulse": {
+    "dp_Pa": 51027.69573398721,
+    "dp_fraction": 0.03401846382265814,
+    "du_acoustic_m_s": 3.6319523048191,
+    "t_arrive_us": 28.09932039376205
+  },
+  "phase1_secondary_flows": {
+    "tip_gap_mm": 50.0,
+    "a_cent_m_s2": 100.97976386538619,
+    "t_cent_s": 0.03146899146275432,
+    "dp_cent_Pa": 398.6538729217751
+  },
+  "phase1_vortex_shedding": {
+    "Re_d": 1661162.1945691744,
+    "St": 0.21,
+    "f_shed_Hz": 278.05149111169374
+  },
+  "phase2_kinematics": {
+    "delta_r_m": 0.8,
+    "t_slide_s": 0.2,
+    "t_slide_ms": 200.0,
+    "V_max_m_s": 8.0,
+    "method": "analytical"
+  },
+  "phase2_flow_regime": {
+    "Ma": 0.044958912630019277,
+    "Re": 4356258.243262299,
+    "compressible": false,
+    "turbulent": true
+  },
+  "phase2_boundary_layer": {
+    "L_carrier_mm": 160.0,
+    "Re_L": 4356258.243262299,
+    "regime": "turbulent",
+    "delta_m": 0.0027829088587755604,
+    "delta_mm": 2.7829088587755604,
+    "theta_m": 0.0002705605834920684,
+    "delta_star_m": 0.00034786360734694505,
+    "H": 1.2857142857142856,
+    "Cf": 0.0027829088587755604,
+    "u_tau_m_s": 0.29841763265735144
+  },
+  "phase2_eddy_diffusion": {
+    "method": "analytical",
+    "nu_t_outer_m2_s": 5.009235945796008e-05,
+    "nu_t_over_nu": 170.48066704156,
+    "u_prime_m_s": 0.4,
+    "t_eddy_s": 0.006957272146938901,
+    "t_eddy_ms": 6.957272146938901,
+    "t_decay_s": 0.013914544293877801,
+    "t_decay_ms": 13.914544293877801,
+    "ell_turb_mm": 0.834872657632668,
+    "ell_mol_mm": 0.3832950214931171,
+    "max_reach_mm": 4.001076537901345,
+    "u_at_obs_m_s": 0.0,
+    "u_at_obs_cm_s": 0.0,
+    "reaches_z_obs": false
+  },
+  "summary": {
+    "t_rot_ms": 395.45100958107565,
+    "t_slide_ms": 200.0,
+    "t_total_ms": 595.4510095810757,
+    "V_tip_max_m_s": 25.421850615926285,
+    "V_slide_max_m_s": 8.0,
+    "phase1_delta_mm": 2.208388862420088,
+    "phase2_delta_mm": 2.7829088587755604,
+    "phase1_max_reach_mm": 3.2542005426392313,
+    "phase2_max_reach_mm": 4.001076537901345,
+    "z_obs_mm": 5.0,
+    "phase1_u_at_obs_m_s": 3.1732884330048736e-07,
+    "phase2_u_at_obs_m_s": 0.0,
+    "gas_quiescent_at_z_obs": true
+  }
+}
