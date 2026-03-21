@@ -1,0 +1,989 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{Residual Gas Velocity Above a Stopped Propeller Blade\\
+       in Dense Xenon: A Mechanism-by-Mechanism Analysis}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ══════════════════════════════════════════════════════════════
+\section{Problem Definition}
+\label{sec:problem}
+% ══════════════════════════════════════════════════════════════
+
+A horizontal two-bladed propeller with NACA\,0012 airfoil cross-section
+rotates inside a vertical cylindrical vessel filled with xenon gas at
+high pressure. The propeller sweeps through a prescribed angle
+$\theta_\mathrm{sweep}$ in a time $T_\mathrm{sweep}$, starting from
+rest and returning to rest. We seek the residual gas velocity at a
+height $z_\mathrm{obs}$ above the upper blade surface, evaluated at a
+time $t_\mathrm{obs}$ after the blade has stopped.
+
+\subsection{Parameters}
+
+Seven parameters are treated as variable inputs; all others are fixed.
+The rotation time $t_\mathrm{rot}$ is computed from the inertia and
+motor torque (see Section~\ref{sec:kinematics}).
+
+\begin{table}[H]
+\centering
+\caption{Variable parameters (with default values).}
+\label{tab:params}
+\begin{tabular}{llll}
+\toprule
+Symbol & Description & Default & Units \\
+\midrule
+$c$                   & Blade chord length          & 0.16  & m   \\
+$\theta_\mathrm{sweep}$ & Sweep angle              & $\pi$ & rad \\
+$m_\mathrm{blade}$   & Mass of each blade ($\times 2$)  & 0.25  & kg  \\
+$m_\mathrm{plate}$   & Mass of each carrier plate ($\times 2$) & 0.15 & kg \\
+$\tau$               & Motor torque                & 60    & N$\cdot$m \\
+$z_\mathrm{obs}$     & Observation height above blade top & 0.005 & m \\
+$t_\mathrm{obs}$     & Observation time after stop  & 0.5   & s   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Fixed parameters.}
+\label{tab:fixed}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Description \\
+\midrule
+$R$            & \SI{1.6}{m}        & Blade span (hub to tip) \\
+$P$            & \SI{15}{bar}       & Xenon pressure \\
+$T$            & \SI{300}{K}        & Gas temperature \\
+NACA profile   & 0012               & Symmetric, 12\% thickness \\
+$\alpha$       & $0^\circ$          & Angle of attack \\
+$d_\mathrm{wire}$  & \SI{0.2}{mm}  & Wire grid wire diameter \\
+$s_\mathrm{wire}$  & \SI{2}{mm}    & Wire grid spacing (centre-to-centre) \\
+$\Delta D$     & \SI{0.10}{m}       & Vessel inner diameter surplus over propeller \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Geometry and Coordinate System}
+
+The blade rotates in the $xy$-plane. The $z$-axis points upward from
+the blade centre-plane. The NACA\,0012 blade has maximum thickness
+$t_\mathrm{max} = 0.12\,c$, so the upper blade surface is at
+$z_\mathrm{blade} = t_\mathrm{max}/2 = 0.06\,c$ above the rotation
+axis. A horizontal wire grid sits at height $z_\mathrm{grid}$ above
+the blade top (in this analysis we evaluate conditions at an arbitrary
+$z_\mathrm{obs}$). The cylindrical vessel has inner radius
+\begin{equation}
+  R_\mathrm{cyl} = R + \frac{\Delta D}{2}\,.
+\end{equation}
+The tip clearance is $\Delta D / 2$.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Xenon Gas Properties}
+\label{sec:gas}
+% ══════════════════════════════════════════════════════════════
+
+Xenon is a monatomic ideal gas to good approximation at \SI{15}{bar},
+\SI{300}{K} (compressibility factor $Z \approx 0.98$).
+
+\paragraph{Density.}
+\begin{equation}
+  \rho = \frac{P M_\mathrm{Xe}}{R_g T}\,,
+  \label{eq:density}
+\end{equation}
+where $M_\mathrm{Xe} = \SI{0.13129}{kg/mol}$ and
+$R_g = \SI{8.314}{J/(mol\cdot K)}$. This gives
+$\rho \approx \SI{79}{kg/m^3}$, roughly 65 times denser than air at STP.
+
+\paragraph{Dynamic viscosity.}
+The viscosity of Xe is nearly pressure-independent at moderate densities.
+At $T = \SI{300}{K}$:
+\begin{equation}
+  \mu \approx \SI{2.32e-5}{Pa\cdot s}\,.
+\end{equation}
+
+\paragraph{Kinematic viscosity.}
+\begin{equation}
+  \nu = \frac{\mu}{\rho} \approx \SI{2.94e-7}{m^2/s}\,.
+  \label{eq:nu}
+\end{equation}
+This is extremely small --- about 50 times smaller than air at STP ---
+because $\rho$ is large while $\mu$ is comparable to air.
+
+\paragraph{Speed of sound.}
+For a monatomic ideal gas with $\gamma = 5/3$:
+\begin{equation}
+  c_s = \sqrt{\frac{\gamma R_g T}{M_\mathrm{Xe}}}
+      \approx \SI{178}{m/s}\,.
+  \label{eq:cs}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Blade Kinematics and Flow Regime}
+\label{sec:kinematics}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Bang-Bang Motion Profile with Aerodynamic Drag}
+
+The propeller executes a \emph{bang-bang} motion profile: it accelerates
+under constant motor torque $\tau$, then decelerates under reversed
+torque $-\tau$. The motion is governed by:
+\begin{equation}
+  I\,\frac{d\omega}{dt} = \pm\tau - \tau_\mathrm{drag}(\omega)\,,
+  \label{eq:EOM}
+\end{equation}
+where the upper sign applies during acceleration and the lower during
+deceleration.
+
+\paragraph{Moment of Inertia.}
+The system consists of two blades (uniform rods of mass $m_\mathrm{blade}$
+extending from $r = 0$ to $r = R$) and two carrier plates (point masses
+$m_\mathrm{plate}$ at the worst-case position $r = R$):
+\begin{equation}
+  I = 2 \times \frac{1}{3}\,m_\mathrm{blade}\,R^2
+    + 2 \times m_\mathrm{plate}\,R^2
+    = \frac{2R^2}{3}\left(m_\mathrm{blade} + 3\,m_\mathrm{plate}\right).
+  \label{eq:I}
+\end{equation}
+For default parameters ($m_\mathrm{blade} = \SI{0.25}{kg}$,
+$m_\mathrm{plate} = \SI{0.15}{kg}$, $R = \SI{1.6}{m}$):
+$I \approx \SI{1.19}{kg\cdot m^2}$.
+
+\paragraph{Aerodynamic Drag Torque.}
+The drag on both blades at angular velocity $\omega$ is:
+\begin{equation}
+  \tau_\mathrm{drag} = \mathcal{D}\,\omega^2\,,
+  \qquad
+  \mathcal{D} = \frac{\rho\, C_d\, d_\mathrm{wake}\, R^4}{4}\,,
+  \label{eq:tau_drag}
+\end{equation}
+where $d_\mathrm{wake} = 0.12\,c$ is the wake thickness (approximately
+equal to the blade thickness for a streamlined section), and
+$C_d \approx 0.1$ is an effective drag coefficient for the
+blade assembly moving through the gas. Note that the NACA\,0012 profile
+drag coefficient at $\alpha = 0$ is much smaller
+($C_d^\mathrm{profile} \approx 0.007$), but this value applies to flow
+along the chord. The higher effective $C_d$ used here accounts for:
+(i) the blade cross-section sweeping tangentially through the gas, and
+(ii) the carrier plates ($m_\mathrm{plate}$) sliding on the blades,
+which add semi-bluff frontal area and flow disruption at interfaces.
+The combined blade-plus-plate assembly is thus intermediate between
+a streamlined airfoil and a bluff body.
+
+For default parameters ($\rho = \SI{79}{kg/m^3}$, $C_d = 0.1$,
+$d_\mathrm{wake} = 0.12 \times \SI{0.16}{m} = \SI{19.2}{mm}$,
+$R = \SI{1.6}{m}$):
+\begin{equation}
+  \mathcal{D} \approx \SI{0.25}{N\cdot m\cdot s^2/rad^2}\,.
+\end{equation}
+
+\paragraph{Asymmetric Switching Point.}
+Since drag always opposes motion, deceleration (where both reversed
+motor torque \emph{and} drag oppose motion) is stronger than
+acceleration. To complete the full sweep angle $\theta$, the switching
+point $\theta_\mathrm{switch}$ must satisfy $\theta_\mathrm{switch} > \theta/2$.
+
+The equation of motion~\eqref{eq:EOM} is nonlinear and is solved
+numerically to find $\theta_\mathrm{switch}$ such that
+$\omega \to 0$ exactly when $\theta \to \theta_\mathrm{target}$.
+
+\paragraph{Inertia-Only Reference (No Drag).}
+For comparison, if drag is neglected:
+\begin{align}
+  \alpha_0 &= \frac{\tau}{I} \approx \SI{50}{rad/s^2}\,,
+  \label{eq:alpha} \\
+  t_\mathrm{rot,0} &= 2\sqrt{\frac{\theta\, I}{\tau}}
+    \approx \SI{500}{ms}\,,
+  \label{eq:trot0} \\
+  \omega_\mathrm{max,0} &= \sqrt{\frac{\theta\,\tau}{I}}
+    \approx \SI{12.6}{rad/s}\,.
+  \label{eq:omega_max0}
+\end{align}
+
+\paragraph{Numerical Solution with Drag.}
+For default parameters, the numerical integration yields:
+\begin{align}
+  \theta_\mathrm{switch} &\approx \SI{2.05}{rad}
+    \quad (117.5^\circ, \text{ vs.\ } 90^\circ \text{ without drag})\,,
+  \label{eq:theta_switch} \\
+  t_\mathrm{accel} &\approx \SI{306}{ms}\,,
+  \label{eq:taccel} \\
+  t_\mathrm{decel} &\approx \SI{201}{ms}\,,
+  \label{eq:tdecel} \\
+  t_\mathrm{rot} &\approx \SI{507}{ms}
+    \quad (+1.4\% \text{ compared to no-drag})\,,
+  \label{eq:trot} \\
+  \omega_\mathrm{max} &\approx \SI{11.8}{rad/s}
+    \quad (-6.3\% \text{ reduction})\,.
+  \label{eq:omega_max}
+\end{align}
+
+\paragraph{Peak Tip Velocity.}
+\begin{equation}
+  V_\mathrm{tip} = \omega_\mathrm{max}\,R
+    \approx \SI{18.8}{m/s}\,.
+  \label{eq:Vtip}
+\end{equation}
+
+\paragraph{Drag Impact Summary.}
+Aerodynamic drag has a modest effect on the kinematics:
+\begin{itemize}[nosep]
+  \item Rotation time increases by $\sim 1.4\%$.
+  \item Peak angular velocity decreases by $\sim 6.3\%$.
+  \item The switching angle shifts from $90^\circ$ to $117.5^\circ$.
+\end{itemize}
+The qualitative behaviour remains unchanged, and the peak velocity is
+still $\sim\SI{19}{m/s}$, well within the incompressible regime.
+
+\subsection{Flow Regime}
+
+We evaluate the flow regime at the peak velocity, which represents the
+most demanding conditions for the boundary layer.
+
+\paragraph{Mach Number.}
+The tip Mach number is
+\begin{equation}
+  \mathrm{Ma}_\mathrm{tip}
+    = \frac{V_\mathrm{tip}}{c_s}\,.
+  \label{eq:Mach}
+\end{equation}
+For default parameters, $\mathrm{Ma} \approx 0.11 < 0.3$, so the flow is
+\emph{incompressible}: density variations are negligible ($< 5\%$),
+the continuity equation simplifies to $\nabla \cdot \mathbf{v} = 0$,
+and no shock waves or compressibility-driven phenomena occur.
+
+\paragraph{Reynolds Number.}
+The chord-based Reynolds number at the tip is
+\begin{equation}
+  \mathrm{Re}_\mathrm{tip} = \frac{V_\mathrm{tip}\,c}{\nu}\,.
+  \label{eq:Re}
+\end{equation}
+For default parameters, $\mathrm{Re}_\mathrm{tip} \approx 1.1 \times 10^7$,
+far exceeding the critical value of $\sim 5 \times 10^5$ for transition.
+The boundary layer is therefore \emph{fully turbulent}: inertial forces
+dominate viscous forces, producing chaotic eddies with enhanced mixing
+near the wall. The turbulent BL is thicker than a laminar one but has
+a fuller velocity profile (more momentum near the wall).
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Boundary Layer on the Upper Surface}
+\label{sec:BL}
+% ══════════════════════════════════════════════════════════════
+
+Since we are interested in the flow \emph{above} the blade, only the
+upper-surface boundary layer (BL) matters.
+
+\subsection{Flat-Plate Turbulent BL Estimates}
+
+For a turbulent BL developing from the leading edge over a flat plate
+of length $c$ at Reynolds number $\mathrm{Re}_c = V c / \nu$, the
+standard $\tfrac{1}{7}$-power-law result gives:
+\begin{align}
+  \delta &= 0.37\,c\;\mathrm{Re}_c^{-1/5}\,,
+    \label{eq:delta} \\
+  \theta &= \frac{7}{72}\,\delta
+          = \frac{7}{72}\times 0.37\,c\;\mathrm{Re}_c^{-1/5}\,,
+    \label{eq:theta} \\
+  \delta^* &= \frac{1}{8}\,\delta\,,
+    \label{eq:dstar}
+\end{align}
+where $\delta$ is the BL thickness, $\theta$ the momentum thickness,
+and $\delta^*$ the displacement thickness.
+
+\subsection{NACA\,0012 Pressure Gradient Effects}
+
+An explicit integral BL calculation (Thwaites' method for the laminar
+portion, Head's entrainment method for the turbulent portion) using the
+NACA\,0012 inviscid velocity distribution shows that the favourable
+pressure gradient over the front $\sim 30\%$ of the chord thins the BL,
+while the adverse gradient over the rear $\sim 70\%$ thickens it. These
+two effects approximately cancel: at $x/c \approx 0.95$ (the last
+station before the integral method approaches separation),
+$\delta \approx \SI{4.0}{mm}$, in excellent agreement with the
+flat-plate estimate of $\SI{3.9}{mm}$. We therefore use the flat-plate
+formula~\eqref{eq:delta} throughout.
+
+\subsection{Skin Friction and Drag Coefficient}
+
+The local skin-friction coefficient from the Blasius correlation:
+\begin{equation}
+  C_f = 0.0592\;\mathrm{Re}_c^{-1/5}\,.
+  \label{eq:Cf}
+\end{equation}
+
+The friction velocity:
+\begin{equation}
+  u_\tau = V_\mathrm{tip}\,\sqrt{\frac{C_f}{2}}\,.
+  \label{eq:utau}
+\end{equation}
+
+The profile drag coefficient for NACA\,0012 at $\alpha = 0$ is obtained
+from the Squire--Young formula applied at the trailing edge, or from
+experimental data:
+\begin{equation}
+  C_d \approx 0.006\text{--}0.009
+  \label{eq:Cd}
+\end{equation}
+depending on the transition location. For the numerics we compute $C_d$
+from the BL quantities via
+\begin{equation}
+  C_d = \frac{2\,(2\theta)}{c}
+      \left(\frac{U_e(x_\mathrm{TE})}{V}\right)^{(H+5)/2},
+  \label{eq:SY}
+\end{equation}
+where $H = \delta^*/\theta$ is the shape factor at the trailing edge.
+
+\subsection{Wake Geometry (Upper Surface Only)}
+
+The relevant length scales for default parameters are:
+\begin{equation}
+  \delta \approx \SI{2.3}{mm}\,,
+  \quad
+  \theta \approx \SI{0.23}{mm}\,,
+  \quad
+  \delta^* \approx \SI{0.29}{mm}\,.
+\end{equation}
+The upper blade surface sits at $z_\mathrm{blade} = 0.06\,c$ above the
+rotation axis. The BL extends to
+\begin{equation}
+  z_\mathrm{BL} = 0.06\,c + \delta\,.
+\end{equation}
+The gap between the top of the BL and the observation height is
+\begin{equation}
+  \Delta z_\mathrm{gap} = z_\mathrm{obs} - \delta\,.
+  \label{eq:gap}
+\end{equation}
+For default parameters ($z_\mathrm{obs} = \SI{5}{mm}$,
+$\delta \approx \SI{2.3}{mm}$), $\Delta z_\mathrm{gap} \approx \SI{2.7}{mm}$.
+
+
+\subsection{Initial Velocity Profile in the Lab Frame}
+
+In the blade's reference frame, the BL velocity follows a
+$\tfrac{1}{7}$-power law: $u_\mathrm{blade}(z) = V(z/\delta)^{1/7}$
+for $0 \le z \le \delta$, with $u = V$ outside the BL. Transforming to
+the lab frame (where the gas is initially at rest and the blade moves
+at $V$):
+\begin{equation}
+  u_\mathrm{lab}(z) =
+  \begin{cases}
+    V\bigl[1 - (z/\delta)^{1/7}\bigr] & 0 < z \le \delta \\
+    0 & z > \delta
+  \end{cases}
+  \label{eq:ulab}
+\end{equation}
+The gas near the blade surface ($z \to 0$) is dragged along at nearly
+$V$; at $z = \delta$ the velocity is zero.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 1: Turbulent Eddy Diffusion}
+\label{sec:eddies}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Statement of the Problem}
+
+After the blade stops, the momentum in the BL
+(equation~\ref{eq:ulab}) can in principle diffuse vertically into the
+quiescent gas above. The question is whether this diffusion carries any
+appreciable velocity to $z = z_\mathrm{obs}$ within time
+$t_\mathrm{obs}$.
+
+The evolution is governed by the one-dimensional diffusion equation:
+\begin{equation}
+  \frac{\partial u}{\partial t}
+  = \frac{\partial}{\partial z}
+    \left[\nu_\mathrm{eff}(z,t)\,\frac{\partial u}{\partial z}\right],
+  \label{eq:diffusion}
+\end{equation}
+with initial condition~\eqref{eq:ulab} and boundary conditions
+\begin{equation}
+  u(0,t) = 0 \quad\text{(no-slip on stationary blade)}\,,
+  \qquad
+  u(z \to \infty, t) = 0\,.
+\end{equation}
+
+\subsection{Turbulent Viscosity Profile}
+
+The effective viscosity is $\nu_\mathrm{eff} = \nu + \nu_t(z,t)$.
+At $t = 0$ (blade just stopped), the turbulent viscosity in the BL
+follows the standard two-layer model:
+\begin{equation}
+  \nu_t(z, 0) =
+  \begin{cases}
+    \kappa\, u_\tau\, z & z < 0.2\,\delta
+      \quad\text{(inner / log-law region)} \\
+    0.018\, V\, \delta^* & 0.2\,\delta \le z < \delta
+      \quad\text{(outer region)} \\
+    0 & z \ge \delta
+  \end{cases}
+  \label{eq:nut_profile}
+\end{equation}
+where $\kappa = 0.41$ is the von K\'arm\'an constant. For default
+parameters:
+\begin{align}
+  \nu_t^\mathrm{inner}(z = 0.2\delta)
+    &= \kappa\, u_\tau\,(0.2\delta)
+    \approx \SI{1.3e-4}{m^2/s}\,,
+    \label{eq:nut_inner}
+  \\
+  \nu_t^\mathrm{outer}
+    &= 0.018\, V\, \delta^*
+    \approx \SI{1.0e-4}{m^2/s}\,.
+    \label{eq:nut_outer}
+\end{align}
+The ratio to molecular viscosity is
+$\nu_t / \nu \approx 350$.
+
+\subsection{Turbulence Decay After Blade Stops}
+
+Once the blade stops, there is no energy input to sustain the
+turbulence. The eddies decay on the large-eddy turnover timescale:
+\begin{equation}
+  t_e = \frac{\delta}{u'}\,,
+  \label{eq:teddy}
+\end{equation}
+where $u' \approx 0.05\,V$ is the outer-layer turbulence intensity
+(comparable to $u_\tau$). For default parameters,
+$t_e \approx \SI{2.3}{ms}$.
+
+We model the decay as exponential with an $e$-folding time of
+$2\,t_e$ (approximately two eddy turnovers for significant energy
+loss):
+\begin{equation}
+  \nu_t(z,t) = \nu_t(z,0)\;\exp\!\left(-\frac{t}{2\,t_e}\right).
+  \label{eq:nut_decay}
+\end{equation}
+
+\subsection{Diffusion Length Scale}
+
+In the brief window before the turbulence dies ($\sim 2\,t_e \approx
+\SI{5}{ms}$), the turbulent diffusion extends momentum by a distance
+\begin{equation}
+  \ell_\mathrm{turb} \sim \sqrt{\nu_t^\mathrm{outer} \times 2\,t_e}
+  \approx \sqrt{\SI{1.0e-4}{} \times \SI{0.005}{}}
+  \approx \SI{0.7}{mm}\,.
+  \label{eq:ell_turb}
+\end{equation}
+Starting from the top of the BL at $z = \delta \approx \SI{2.3}{mm}$,
+the momentum can reach at most $z \approx \SI{3.0}{mm}$. For
+$z_\mathrm{obs} = \SI{5}{mm}$, the gap of \SI{2.7}{mm} is larger
+than $\ell_\mathrm{turb}$.
+
+After the turbulence decays, only molecular diffusion remains. In the
+remaining time ($\sim \SI{0.5}{s}$):
+\begin{equation}
+  \ell_\mathrm{mol} = \sqrt{\nu\, t_\mathrm{obs}}
+  \approx \sqrt{\SI{2.94e-7}{} \times \SI{0.5}{}}
+  \approx \SI{0.38}{mm}\,.
+  \label{eq:ell_mol}
+\end{equation}
+The total reach is $\delta + \ell_\mathrm{turb} + \ell_\mathrm{mol}
+\approx \SI{3.4}{mm}$, short of $z_\mathrm{obs} = \SI{5}{mm}$.
+
+\subsection{No-Slip Absorption}
+
+Simultaneously, the no-slip condition at $z = 0$ (the now-stationary
+blade surface) absorbs momentum from below. Since most of the momentum
+is concentrated near $z = 0$ (equation~\ref{eq:ulab}), this absorption
+is efficient. The numerical solution of equation~\eqref{eq:diffusion}
+shows that $\sim 38\%$ of the initial momentum is absorbed by the
+surface within \SI{0.5}{s}.
+
+\subsection{Result}
+
+The numerical solution of the 1D diffusion
+equation~\eqref{eq:diffusion} with decaying turbulent viscosity gives:
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    \approx 0 \quad \text{(eddy diffusion)}}
+\end{equation}
+The turbulent eddies are too small ($\sim\delta = \SI{2.3}{mm}$) and
+decay too quickly ($\sim\SI{5}{ms}$) to transport momentum across
+the gap to $z_\mathrm{obs}$.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 2: Bulk Swirl and Angular Momentum}
+\label{sec:swirl}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Angular Impulse}
+
+The drag on both blades deposits tangential (azimuthal) momentum into
+the gas. The drag per unit span at radius $r$ is
+\begin{equation}
+  f(r) = \tfrac{1}{2}\,\rho\,[\omega r]^2\,c\,C_d\,.
+\end{equation}
+The total torque:
+\begin{equation}
+  \tau = 2 \int_0^R r\, f(r)\, dr
+      = \rho\,\omega^2\,c\,C_d\,\frac{R^4}{4}\,.
+  \label{eq:torque}
+\end{equation}
+The angular impulse over the sweep:
+\begin{equation}
+  J = \tau\, T_\mathrm{sweep}\,.
+  \label{eq:J}
+\end{equation}
+
+\subsection{Where the Momentum Resides}
+
+This angular momentum is deposited \emph{exclusively} within the
+boundary layers on the blade surfaces --- a slab of thickness
+$\sim(t_\mathrm{max} + 2\delta)$ centred on the blade plane. The gas
+outside this slab is undisturbed (apart from the potential flow, which
+vanishes when the blade stops; see Section~\ref{sec:potential}).
+
+The key question is whether this momentum can propagate vertically to
+$z_\mathrm{obs}$.
+
+\subsection{Molecular Diffusion Timescale}
+
+The time for momentum to diffuse across the gap
+$\Delta z_\mathrm{gap}$ by molecular viscosity alone:
+\begin{equation}
+  t_\mathrm{visc}
+    = \frac{(\Delta z_\mathrm{gap})^2}{\nu}
+    = \frac{(z_\mathrm{obs} - \delta)^2}{\nu}\,.
+  \label{eq:tvisc}
+\end{equation}
+For default parameters,
+$t_\mathrm{visc} = (0.0027)^2 / \SI{2.94e-7}{} \approx \SI{25}{s}$
+--- much longer than $t_\mathrm{obs} = \SI{0.5}{s}$.
+
+\subsection{Ekman Pumping}
+
+In a rotating fluid adjacent to a boundary, the Ekman layer drives a
+secondary (radial then axial) circulation. The Ekman layer thickness
+and the resulting axial velocity are:
+\begin{equation}
+  \delta_E = \sqrt{\frac{\nu_\mathrm{eff}}{\Omega}}\,,
+  \qquad
+  w_E = \sqrt{\nu_\mathrm{eff}\,\Omega}\,,
+  \label{eq:Ekman}
+\end{equation}
+where $\Omega \sim u_\mathrm{wake}/R$ is the effective rotation rate of
+the wake gas.
+
+\paragraph{With molecular viscosity:}
+$\delta_E \approx \SI{0.22}{mm}$, $w_E \approx \SI{1.4}{mm/s}$.
+Negligible.
+
+\paragraph{With turbulent viscosity} ($\nu_t \approx \SI{1e-4}{m^2/s}$):
+$\delta_E \approx \SI{4}{mm}$, $w_E \approx \SI{2.6}{cm/s}$. But the
+turbulence decays in $\sim\SI{5}{ms}$, so the vertical distance
+traversed is $w_E \times 2 t_e \approx \SI{0.12}{mm}$.
+
+In both cases, Ekman pumping cannot reach $z_\mathrm{obs}$ from the
+blade plane.
+
+\subsection{Ekman Spin-Up Time}
+
+Even if one posits a mechanism for establishing vessel-scale secondary
+circulation, the Ekman spin-up timescale is:
+\begin{equation}
+  t_\mathrm{Ekman} = \frac{H}{\sqrt{\nu_\mathrm{eff}\,\Omega}}\,,
+  \label{eq:tEkman}
+\end{equation}
+where $H$ is the vessel height. With turbulent $\nu$:
+$t_\mathrm{Ekman} \approx \SI{39}{s}$. With molecular $\nu$:
+$t_\mathrm{Ekman} \approx \SI{740}{s}$. Both are far longer than
+$t_\mathrm{obs}$.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    \approx 0 \quad \text{(bulk swirl)}}
+\end{equation}
+The angular momentum stays confined to the blade plane. No mechanism
+transports it to $z_\mathrm{obs}$ within $t_\mathrm{obs}$.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 3: Displacement (Potential) Flow}
+\label{sec:potential}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Flow Field During the Sweep}
+
+The NACA\,0012 blade has finite thickness
+$t_\mathrm{max} = 0.12\,c$. As it moves through the gas, it displaces
+fluid. The inviscid (potential) flow field around a two-dimensional body
+of effective diameter $d \approx t_\mathrm{max}$ moving at velocity $V$
+produces a vertical velocity component at height $z$ above the blade
+centre that scales as:
+\begin{equation}
+  w_\mathrm{disp}(z)
+    \sim V \,\frac{(d/2)^2}{z^2 + (d/2)^2}\,.
+  \label{eq:wdisp}
+\end{equation}
+For $z = z_\mathrm{obs}$ and default parameters, this gives
+$w_\mathrm{disp} \sim \SI{16}{m/s}$ --- a large value, present
+\emph{only while the blade is in motion and in the vicinity}.
+
+\subsection{Acoustic Clearing Time}
+
+The potential flow field is slaved to the blade. When the blade stops,
+the disturbance propagates away at the speed of sound:
+\begin{equation}
+  t_\mathrm{acoustic} = \frac{R}{c_s} \approx \SI{9}{ms}\,.
+  \label{eq:tacoustic}
+\end{equation}
+Within $\sim\SI{10}{ms}$ of the blade stopping, the potential flow
+field has been radiated away as a weak acoustic wave.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(potential flow, for } t_\mathrm{obs}
+    \gg t_\mathrm{acoustic}\text{)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 4: Pressure Pulse from Deceleration}
+\label{sec:pressure}
+% ══════════════════════════════════════════════════════════════
+
+When the blade decelerates to rest over some time $t_\mathrm{decel}$,
+the change in momentum of the fluid near the blade creates a pressure
+transient.
+
+\subsection{Amplitude}
+
+The pressure perturbation scales as:
+\begin{equation}
+  \Delta p \sim \rho\, V_\mathrm{tip}^2\,.
+  \label{eq:dp}
+\end{equation}
+For default parameters, $\Delta p \approx \SI{32000}{Pa}$, which is
+$2\%$ of the ambient \SI{15}{bar} --- a small perturbation.
+
+The velocity induced by this acoustic wave:
+\begin{equation}
+  \Delta u \sim \frac{\Delta p}{\rho\, c_s}
+            = \frac{V_\mathrm{tip}^2}{c_s}\,.
+  \label{eq:du_acoustic}
+\end{equation}
+For default parameters, $\Delta u \approx \SI{2.3}{m/s}$.
+
+\subsection{Propagation}
+
+The pressure pulse arrives at $z_\mathrm{obs}$ in a time
+\begin{equation}
+  t_\mathrm{arrive} = \frac{z_\mathrm{obs}}{c_s}\,.
+\end{equation}
+For default parameters, $t_\mathrm{arrive} \approx \SI{28}{\mu s}$.
+The pulse has duration $\sim t_\mathrm{decel}$ and then propagates past
+$z_\mathrm{obs}$, leaving no residual velocity.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(pressure pulse, for }
+    t_\mathrm{obs} \gg t_\mathrm{decel}\text{)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 5: Secondary Flows}
+\label{sec:secondary}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Tip Clearance Flow}
+
+In turbomachinery, a pressure difference between the suction and
+pressure sides of a blade drives leakage flow through the tip gap. For
+a lifting blade this is a significant source of axial mixing.
+
+For NACA\,0012 at $\alpha = 0$: there is \emph{no lift}, and hence
+\emph{no pressure difference} across the blade. The flow field is
+symmetric about the chord plane.
+\begin{equation}
+  \Delta p_\mathrm{tip} = 0 \qquad (\alpha = 0)\,.
+\end{equation}
+No tip clearance flow exists.
+
+\subsection{Centrifugal Effects and Wake--Wall Interaction}
+
+The tangential wake gas experiences centrifugal acceleration:
+\begin{equation}
+  a_\mathrm{cent} = \frac{u_\mathrm{wake}^2}{R}\,.
+  \label{eq:acent}
+\end{equation}
+The time for gas to traverse the tip gap
+$\Delta r = \Delta D / 2$ under this acceleration:
+\begin{equation}
+  t_\mathrm{cent} = \sqrt{\frac{2\,\Delta r}{a_\mathrm{cent}}}
+                   = \sqrt{\frac{2\,\Delta r\, R}{u_\mathrm{wake}^2}}\,.
+  \label{eq:tcent}
+\end{equation}
+For default parameters, $t_\mathrm{cent} \approx \SI{0.04}{s}$, but the
+``rotation'' that drives the
+centrifugal force is itself decaying. Furthermore, the wake is
+\emph{tangential}: it flows \emph{along} the cylindrical wall, not
+\emph{into} it. There is no face-on impingement that would deflect
+the flow into the axial direction.
+
+\subsection{Axial Coupling Factor ``$\varepsilon$''}
+
+One might posit an azimuthal-to-axial coupling fraction
+$\varepsilon$ such that $v_\mathrm{axial} \sim \varepsilon\,
+V_\mathrm{mean}$. This parameter has \emph{no basis} in any
+identifiable flow mechanism at $\alpha = 0$. All candidate coupling
+mechanisms (Ekman pumping, tip clearance, centrifugal wall deflection)
+have been shown to be either absent or far too slow.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(secondary flows)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 6: Vortex Shedding}
+\label{sec:vortex}
+% ══════════════════════════════════════════════════════════════
+
+When the blade stops, any bound vorticity is shed. For a
+\emph{non-lifting} blade ($\alpha = 0$), there is no net circulation,
+and hence no starting/stopping vortex of macroscopic strength.
+
+Drag-induced vortex shedding (von K\'arm\'an street) is characterised by
+the Strouhal number:
+\begin{equation}
+  \mathrm{St} = \frac{f\, t_\mathrm{max}}{V}\,,
+\end{equation}
+where $\mathrm{St} \approx 0.21$ for bluff bodies. But NACA\,0012 at
+$\alpha = 0$ is \emph{streamlined}: the wake is thin and coherent
+vortex shedding is strongly suppressed. Any residual shed vortices are
+confined to the blade plane (within $\sim\delta$ of the surface) and
+subject to the same vertical transport limitations established in
+Section~\ref{sec:eddies}.
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(vortex shedding)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Effect of Vessel Confinement}
+\label{sec:confinement}
+% ══════════════════════════════════════════════════════════════
+
+The preceding analysis treats the gas domain as semi-infinite above the
+blade. In reality the propeller operates inside a cylindrical pressure
+vessel of height $H$ and inner radius $R_\mathrm{cyl} = R + \Delta r$,
+where the radial clearance $\Delta r = \Delta D/2$ is small (of order
+\SI{5}{}--\SI{50}{mm}). We now examine whether this confinement
+introduces any new mechanism that could transport momentum to
+$z_\mathrm{obs}$.
+
+\subsection{Wall Boundary Layers}
+
+The cylindrical wall and the top and bottom endcaps are stationary.
+When the blade sweeps, the tangential wake gas flows past these
+surfaces and develops wall boundary layers. These boundary layers are
+thin: for a characteristic velocity $u_\mathrm{wake} \sim V_\mathrm{tip}/2$
+and a flow duration $T_\mathrm{sweep}$, the Stokes penetration depth is
+\begin{equation}
+  \delta_\mathrm{wall} \sim \sqrt{\nu\, T_\mathrm{sweep}}
+    \approx \sqrt{\SI{2.94e-7}{} \times \SI{0.5}{}}
+    \approx \SI{0.4}{mm}\,.
+\end{equation}
+This is confined to the immediate vicinity of the vessel walls and does
+not affect the gas at $z_\mathrm{obs}$ above the blade, which is far
+from any wall surface.
+
+\subsection{Ekman Spin-Up}
+
+In a confined rotating flow, the Ekman mechanism couples the bulk
+rotation to the endcap boundary layers and spins the fluid down over
+a characteristic timescale:
+\begin{equation}
+  t_\mathrm{Ekman} = \frac{H}{\sqrt{\nu\,\Omega}}\,,
+  \label{eq:tEkman}
+\end{equation}
+where $\Omega$ is the representative angular velocity of the gas.
+Even using the turbulent viscosity $\nu_t$ (available only during the
+first few eddy lifetimes $\sim 2 t_e$), this timescale is
+\begin{equation}
+  t_\mathrm{Ekman}^{(\mathrm{turb})}
+    = \frac{H}{\sqrt{\nu_t\,\Omega}}
+    \sim \SI{50}{s}\,,
+\end{equation}
+far longer than any observation time of interest. The molecular Ekman
+time is even longer ($\sim\SI{1000}{s}$). The Ekman pumping velocity
+$w_E = \sqrt{\nu\,\Omega}$ is of order \SI{1}{mm/s} (molecular) or
+\SI{2}{cm/s} (turbulent), but the turbulent Ekman layer exists for
+only $\sim\SI{10}{ms}$, producing a vertical displacement of
+$\sim\SI{0.2}{mm}$---negligible compared to $z_\mathrm{obs}$.
+
+\subsection{Tip-Gap Flow (Couette)}
+
+In the radial clearance $\Delta r$ between the blade tip and the
+vessel wall, the gas is sheared between the moving blade
+(at velocity $V_\mathrm{tip}$) and the stationary wall. The local
+Reynolds number based on the gap width is
+\begin{equation}
+  \mathrm{Re}_\mathrm{gap}
+    = \frac{V_\mathrm{tip}\,\Delta r}{\nu}\,.
+\end{equation}
+For $\Delta r = \SI{5}{mm}$ and $V_\mathrm{tip} \sim \SI{14}{m/s}$,
+$\mathrm{Re}_\mathrm{gap} \approx 2.4 \times 10^5$, which is high
+enough to be turbulent. However, this Couette-like flow is
+\emph{tangential}: the velocity is entirely in the azimuthal
+direction, with no mechanism to redirect it vertically. The blade at
+$\alpha = 0$ has no pressure difference across its surfaces, so there
+is no tip leakage flow. Any vertical component is limited to the
+blade-surface boundary layer, which is already accounted for in
+Section~\ref{sec:eddies}.
+
+\subsection{Reflected Pressure Waves}
+
+The pressure pulse generated when the blade stops
+(Section~\ref{sec:pressure}) reflects off the vessel walls and
+endcaps. The longest acoustic path is the vessel diagonal
+$\ell_\mathrm{max} = \sqrt{(2R_\mathrm{cyl})^2 + H^2}$, giving a
+reverberation time
+\begin{equation}
+  t_\mathrm{reverb} = \frac{\ell_\mathrm{max}}{c_s}
+    \approx \frac{\SI{3.7}{m}}{\SI{178}{m/s}}
+    \approx \SI{21}{ms}\,.
+\end{equation}
+With viscous absorption on every reflection, the acoustic energy is
+dissipated within a few tens of milliseconds---well before
+$t_\mathrm{obs}$. These waves induce oscillatory velocities (not a
+net residual) and leave no persistent flow.
+
+\subsection{Displacement Flow in a Closed Vessel}
+
+In an open domain the displacement (potential) flow around the moving
+blade decays as a dipole ($\sim 1/r^2$). In a closed vessel, the
+incompressibility constraint modifies the far-field: the gas displaced
+by the advancing blade must recirculate within the vessel volume. This
+recirculation adjusts at the speed of sound. Once the blade stops, the
+source of displacement vanishes, and the potential field readjusts to
+zero on the acoustic timescale $R/c_s \approx \SI{9}{ms}$, exactly as
+in the unconfined case. The vessel walls provide the return path but
+do not sustain any residual flow.
+
+\subsection{Confinement Summary}
+
+No confinement effect introduces a new vertical transport mechanism.
+All wall-related phenomena are either tangential (tip-gap Couette),
+too slow (Ekman spin-up), too thin (wall BLs), or transient
+(reflected pressure waves, displacement readjustment). The six-mechanism
+analysis of Sections~\ref{sec:eddies}--\ref{sec:vortex} remains valid
+without modification.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Conclusion}
+\label{sec:conclusion}
+% ══════════════════════════════════════════════════════════════
+
+Table~\ref{tab:summary} summarises all six mechanisms. Every one yields
+zero residual velocity at $z_\mathrm{obs}$ for
+$t_\mathrm{obs} \gg t_\mathrm{acoustic}$. The vessel confinement
+analysis of Section~\ref{sec:confinement} confirms that no additional
+mechanism arises from the finite-volume geometry.
+
+\begin{table}[H]
+\centering
+\caption{Summary of all mechanisms for residual velocity at
+$z_\mathrm{obs}$ above the blade, $t_\mathrm{obs}$ after stopping.
+Default parameters: $c = \SI{0.16}{m}$,
+$\theta_\mathrm{sweep} = \pi$, $t_\mathrm{rot} = \SI{507}{ms}$ (with drag),
+$z_\mathrm{obs} = \SI{5}{mm}$, $t_\mathrm{obs} = \SI{0.5}{s}$.}
+\label{tab:summary}
+\begin{tabular}{lllc}
+\toprule
+Mechanism & Characteristic timescale & Reach / Comment
+  & $u(z_\mathrm{obs}, t_\mathrm{obs})$ \\
+\midrule
+Eddy diffusion
+  & $2 t_e \approx \SI{5}{ms}$
+  & $\delta + \SI{0.7}{mm} = \SI{3.0}{mm}$
+  & 0 \\
+Bulk swirl
+  & $t_\mathrm{visc} \approx \SI{25}{s}$
+  & Momentum stays in blade plane
+  & 0 \\
+Potential flow
+  & $t_\mathrm{acoustic} \approx \SI{9}{ms}$
+  & Vanishes at speed of sound
+  & 0 \\
+Pressure pulse
+  & $t_\mathrm{decel} \sim \SI{10}{ms}$
+  & Transient wave, passes through
+  & 0 \\
+Secondary flows
+  & $t_\mathrm{Ekman} \sim \SI{39}{s}$
+  & No lift $\Rightarrow$ no tip clearance
+  & 0 \\
+Vortex shedding
+  & ---
+  & Confined to blade plane
+  & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The gas at $z_\mathrm{obs}$ above the blade surface is \textbf{quiescent}
+at time $t_\mathrm{obs}$ after the blade stops, for any
+$t_\mathrm{obs}$ much longer than the acoustic clearing time
+($\sim\SI{10}{ms}$) and for any $z_\mathrm{obs}$ larger than the
+boundary layer thickness ($\sim\SI{2.3}{mm}$ for default parameters).
+
+The fundamental reason is that the NACA\,0012 at zero angle of attack
+produces no lift, so all aerodynamic effects are confined to the thin
+drag wake within $\delta$ of the blade surface. The dense xenon gas has
+an extremely small kinematic viscosity, making all diffusion timescales
+very long, while the turbulent eddies are small ($\sim\delta$) and
+decay rapidly ($\sim\SI{5}{ms}$) once the blade stops. The cylindrical
+vessel walls, endcaps, and radial tip gap introduce no new vertical
+transport mechanism (Section~\ref{sec:confinement}): all
+confinement-related flows are either tangential, transient, or operate
+on timescales orders of magnitude longer than $t_\mathrm{obs}$.
+
+\medskip
+\noindent\textbf{Caveat on the gap $z_\mathrm{obs} - \delta$:}\;
+The conclusion of zero residual velocity holds provided $z_\mathrm{obs}$
+exceeds $\delta$ by at least $\sim\SI{2}{mm}$ (the combined turbulent
+and molecular diffusion reach). For parameter choices where
+$z_\mathrm{obs} - \delta \lesssim \SI{1}{mm}$ (e.g.\ larger chord
+$c = \SI{0.22}{m}$ with $z_\mathrm{obs} = \SI{5}{mm}$), the
+exponential tail of the diffusing momentum profile can produce a small
+but nonzero residual ($\sim\SI{1}{cm/s}$ at $t_\mathrm{obs} = \SI{1}{s}$).
+The numerical PDE solver captures this tail; the companion Python script
+should be used to evaluate any specific parameter combination.
+
+\end{document}

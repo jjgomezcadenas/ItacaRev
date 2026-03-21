@@ -1,0 +1,481 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{MARS Geometries: Propeller vs.\ Rotating Disk}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════
+\section{Pressure Vessel and Gas Environment}
+\label{sec:vessel}
+% ══════════════════════════════════════════════════════════════
+
+Both geometries operate inside the same cylindrical pressure vessel.
+
+\paragraph{Vessel.}
+The vessel is a vertical cylinder with inner radius
+\begin{equation}
+  R_\mathrm{cyl} = R + \frac{\Delta D}{2}\,,
+\end{equation}
+where $R = \SI{1.6}{m}$ is the radius of the rotating element
+(propeller or disk) and $\Delta D = \SI{10}{mm}$ is the diametral
+clearance. This gives $R_\mathrm{cyl} = \SI{1.605}{m}$ and a radial
+gap of $\Delta r = \SI{5}{mm}$ between the outer edge of the rotating
+element and the vessel wall. The vessel height is $H = \SI{1.5}{m}$.
+
+\paragraph{Gas.}
+The vessel is filled with xenon at $P = \SI{15}{bar}$ and
+$T = \SI{300}{K}$ (STP). Treating Xe as an ideal monatomic gas
+($M = \SI{0.131}{kg/mol}$, $\gamma = 5/3$):
+\begin{alignat}{2}
+  \rho  &= \frac{PM}{R_g T}
+        &&\approx \SI{79}{kg/m^3}\,,
+  \label{eq:rho}
+  \\[4pt]
+  \mu   &
+        &&\approx \SI{2.32e-5}{Pa\cdot s}\,,
+  \\[4pt]
+  \nu   &= \mu/\rho
+        &&\approx \SI{2.94e-7}{m^2/s}\,,
+  \\[4pt]
+  c_s   &= \sqrt{\gamma R_g T / M}
+        &&\approx \SI{178}{m/s}\,.
+\end{alignat}
+
+\paragraph{Wire grid.}
+A horizontal wire grid (wire diameter \SI{0.2}{mm}, centre-to-centre
+spacing \SI{2}{mm}) is present in both geometries above the rotating
+element. It plays a negligible role in the flow dynamics and is ignored
+in the analysis that follows.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Geometry A: Multi-Blade Propeller}
+\label{sec:propeller}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Overview}
+
+A horizontal propeller with $N$ equally spaced blades rotates about a
+vertical axis at the bottom of the cylindrical vessel. Each blade has a
+NACA\,0012 airfoil cross-section at zero angle of attack ($\alpha = 0$).
+The propeller sweeps through a prescribed angle and stops; the goal is
+for the gas above the blades to become quiescent as quickly as possible
+after stopping.
+
+\subsection{Blade Geometry}
+
+Each blade extends from a central hub to the tip:
+\begin{itemize}
+  \item Span (hub to tip): $R = \SI{1.6}{m}$.
+  \item Chord: $c$ (variable parameter; default \SI{0.22}{m}).
+  \item Profile: NACA\,0012 (symmetric, maximum thickness
+        $t_\mathrm{max} = 0.12\,c$).
+  \item Angle of attack: $\alpha = 0^\circ$.
+\end{itemize}
+
+The blade upper surface is at height $z_\mathrm{blade} = t_\mathrm{max}/2
+= 0.06\,c$ above the rotation plane. For $c = \SI{0.22}{m}$, the
+maximum thickness is $t_\mathrm{max} = \SI{26.4}{mm}$ and
+$z_\mathrm{blade} = \SI{13.2}{mm}$.
+
+\subsection{Propeller Layout ($N$ Blades)}
+
+The $N$ blades are arranged at equal angular intervals of $2\pi/N$
+radians ($360^\circ/N$). The total propeller diameter is $2R = \SI{3.2}{m}$,
+leaving a radial tip clearance of $\Delta r = \SI{5}{mm}$ to the
+vessel wall on each side.
+
+The maximum angular sweep per event is chosen so that each blade moves
+into the position vacated by its neighbour:
+\begin{equation}
+  \theta_\mathrm{max} = \frac{\pi}{N}
+  \quad\text{(radians)}\,,
+  \qquad
+  = \frac{180^\circ}{N}\,.
+  \label{eq:theta_max}
+\end{equation}
+For $N = 8$: $\theta_\mathrm{max} = \SI{22.5}{\degree}
+= \SI{0.3927}{rad}$.
+
+\subsection{Derived Geometric Quantities}
+
+Table~\ref{tab:propA} collects the key dimensions for Geometry~A.
+All quantities that depend on $c$ are given for the default
+$c = \SI{0.22}{m}$ and $N = 8$.
+
+\begin{table}[H]
+\centering
+\caption{Geometry A (propeller) — key dimensions ($N = 8$,
+$c = \SI{0.22}{m}$).}
+\label{tab:propA}
+\begin{tabular}{lll}
+\toprule
+Quantity & Expression & Value \\
+\midrule
+Number of blades       & $N$                           & 8 \\
+Blade span             & $R$                           & \SI{1.6}{m} \\
+Blade chord            & $c$                           & \SI{0.22}{m} \\
+Max blade thickness    & $0.12\,c$                     & \SI{26.4}{mm} \\
+Total propeller diameter & $2R$                        & \SI{3.2}{m} \\
+Vessel inner diameter  & $2R + \Delta D$               & \SI{3.21}{m} \\
+Radial tip clearance   & $\Delta r = \Delta D/2$       & \SI{5}{mm} \\
+Vessel height          & $H$                           & \SI{1.5}{m} \\
+Max sweep angle        & $\pi / N$                     & \SI{22.5}{\degree} \\
+Blade planform area (one) & $R \times c$               & \SI{0.352}{m^2} \\
+Total blade area ($N$ blades) & $N R c$                & \SI{2.816}{m^2} \\
+Swept area per blade   & $\tfrac{1}{2}R^2\,\theta_\mathrm{max}$
+                                                        & \SI{0.503}{m^2} \\
+Blockage (thickness/tip gap) & $t_\mathrm{max}/\Delta r$
+                                                        & 5.28 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Boundary Conditions}
+
+The propeller operates inside a closed cylindrical vessel:
+\begin{itemize}
+  \item \textbf{Bottom:} the propeller hub and mounting structure
+        (solid boundary).
+  \item \textbf{Top:} the vessel lid at height $H = \SI{1.5}{m}$
+        above the rotation plane (solid boundary).
+  \item \textbf{Side:} cylindrical vessel wall at $r = R_\mathrm{cyl}$,
+        with \SI{5}{mm} radial clearance from the blade tips
+        (solid boundary).
+  \item \textbf{Gas:} Xe at \SI{15}{bar}, \SI{300}{K}, initially at
+        rest.
+\end{itemize}
+
+The small tip clearance (\SI{5}{mm}) means the blade tips operate in a
+narrow annular gap. The vessel wall constrains the flow: there is no
+open outflow boundary. Any momentum deposited in the gas must either
+be absorbed by the vessel walls or decay in place.
+
+\subsection{Sequence of Operations}
+
+For each event:
+\begin{enumerate}
+  \item The propeller rotates by $\theta_\mathrm{max} = \pi/N$ in a
+        sweep time $T_\mathrm{sweep}$, then stops.
+  \item The system waits for time $t_\mathrm{wait}$ for the gas to
+        become quiescent.
+  \item Measurement takes place.
+\end{enumerate}
+
+The angular velocity during the sweep, assuming constant rotation, is
+$\omega = \theta_\mathrm{max} / T_\mathrm{sweep} = \pi / (N\,
+T_\mathrm{sweep})$.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Geometry B: Rotating Disk with Carrier Plates}
+\label{sec:disk}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Overview}
+
+A solid circular disk of radius $R = \SI{1.6}{m}$ rotates about a
+vertical axis at the bottom of the same cylindrical vessel. The disk
+carries $N$ ion-collection plates that can slide radially on rails and
+be elevated vertically above the disk surface. The disk rotation
+repositions the plates; the radial slide and vertical elevation are
+separate, sequential steps.
+
+\subsection{Disk Geometry}
+
+\begin{itemize}
+  \item Radius: $R = \SI{1.6}{m}$.
+  \item Thickness: $h_\mathrm{disk}$ (variable parameter; default
+        \SI{5}{mm}). Must be thick enough to house the elevation
+        screws for the carrier plates.
+  \item The disk upper surface is at height
+        $z_\mathrm{disk} = h_\mathrm{disk}$ above the vessel floor.
+  \item Total disk diameter: $2R = \SI{3.2}{m}$.
+  \item Radial clearance to vessel wall:
+        $\Delta r = \SI{5}{mm}$ (same as propeller geometry).
+\end{itemize}
+
+The disk is a solid, flat object. Unlike the propeller blades
+(which are isolated airfoils with gas flowing around them), the disk
+presents a continuous solid surface. The gas above the disk interacts
+with the entire upper face.
+
+\subsection{Rail and Hangar System}
+
+$N$ radial rails are machined into (or mounted on) the top surface of
+the disk, equally spaced at angular intervals of $2\pi/N$. At the
+outer perimeter of the disk, a ring-shaped \emph{hangar} houses the
+$N$ carrier plates. The hangar is closed on all sides except for $N$
+\emph{doors} (one per rail) through which the carriers can slide
+radially inward or outward.
+
+\subsection{Carrier Plate}
+
+Each carrier plate is a small, flat element:
+\begin{itemize}
+  \item Dimensions: $\SI{160}{mm} \times \SI{160}{mm}
+        \times \SI{5}{mm}$ (length $\times$ width $\times$ height).
+  \item The carrier slides radially on the disk surface along its rail.
+  \item It can be pushed vertically upward (by screws housed in the
+        disk) so that its active surface extends above the boundary
+        layer of the disk.
+  \item The carrier profile must be \emph{symmetric} (top-bottom),
+        since it retracts downward the same way it was elevated. A
+        lenticular or symmetric diamond cross-section is appropriate.
+\end{itemize}
+
+Only \emph{one} carrier plate slides per event.
+
+\subsection{Derived Geometric Quantities}
+
+Table~\ref{tab:geomB} collects the key dimensions for Geometry~B.
+
+\begin{table}[H]
+\centering
+\caption{Geometry B (rotating disk) — key dimensions ($N = 8$,
+$h_\mathrm{disk} = \SI{5}{mm}$).}
+\label{tab:geomB}
+\begin{tabular}{lll}
+\toprule
+Quantity & Expression & Value \\
+\midrule
+Number of ion plates   & $N$                           & 8 \\
+Disk radius            & $R$                           & \SI{1.6}{m} \\
+Disk thickness         & $h_\mathrm{disk}$             & \SI{5}{mm} \\
+Total disk diameter    & $2R$                          & \SI{3.2}{m} \\
+Vessel inner diameter  & $2R + \Delta D$               & \SI{3.21}{m} \\
+Radial tip clearance   & $\Delta r = \Delta D/2$       & \SI{5}{mm} \\
+Vessel height          & $H$                           & \SI{1.5}{m} \\
+Max sweep angle        & $\pi / N$                     & \SI{22.5}{\degree} \\
+Disk upper surface area & $\pi R^2$                    & \SI{8.04}{m^2} \\
+Carrier dimensions     & $L_c \times W_c \times h_c$   & $160\times160\times\SI{5}{mm}$ \\
+Carrier planform area  & $L_c \times W_c$              & \SI{0.0256}{m^2} \\
+Carrier cross-section (radial motion) & $W_c \times h_c$
+                                                        & $160\times\SI{5}{mm}$ \\
+Carrier cross-section (vertical motion) & $L_c \times W_c$
+                                                        & $160\times\SI{160}{mm}$ \\
+Elevation height       & (to clear BL)                 & TBD by analysis \\
+Blockage (disk edge/gap) & $h_\mathrm{disk}/\Delta r$  & 1.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Boundary Conditions}
+
+The disk operates inside the same closed cylindrical vessel as the
+propeller:
+\begin{itemize}
+  \item \textbf{Bottom:} the vessel floor, immediately below the disk.
+        The disk rests on (or is mounted just above) the floor via
+        bearings.
+  \item \textbf{Top:} vessel lid at $H = \SI{1.5}{m}$ above the
+        vessel floor.
+  \item \textbf{Side:} cylindrical wall at $r = R_\mathrm{cyl}$, with
+        \SI{5}{mm} radial clearance from the disk edge.
+  \item \textbf{Above the disk:} gas column of height
+        $\sim H - h_\mathrm{disk} \approx \SI{1.495}{m}$.
+  \item \textbf{Gas:} Xe at \SI{15}{bar}, \SI{300}{K}, initially at
+        rest.
+\end{itemize}
+
+The small radial clearance (\SI{5}{mm}) means the annular gap between
+the disk edge and the vessel wall is very narrow. For the default disk
+thickness $h_\mathrm{disk} = \SI{5}{mm}$, this gap has an aspect ratio
+of $h_\mathrm{disk}/\Delta r = 1$. Gas in this gap is confined and
+strongly influenced by both the rotating disk edge and the stationary
+wall.
+
+Unlike the propeller, the disk presents a \emph{continuous solid
+surface} to the gas above. The entire upper face of the disk
+participates in the boundary layer, not just $N$ isolated blades.
+
+\subsection{Sequence of Operations}
+
+For each event, three sequential steps:
+\begin{enumerate}
+  \item \textbf{Disk rotation.} The disk rotates by
+        $\theta_\mathrm{max} = \pi/N$ in a sweep time
+        $T_\mathrm{sweep}$, then stops. The angular velocity is
+        $\omega = \pi/(N\,T_\mathrm{sweep})$. During this step all
+        carrier plates are housed inside the hangar; only the smooth
+        disk surface is exposed to the gas.
+
+  \item \textbf{Radial slide.} After the disk has stopped and the gas
+        above the disk has become sufficiently quiescent, one carrier
+        plate slides radially outward from the hangar along its rail to
+        the target position. The carrier moves along the disk surface
+        (i.e.\ at $z \approx h_\mathrm{disk}$). Its cross-section
+        presented to the gas during this motion is
+        $W_c \times h_c = 160 \times \SI{5}{mm}$.
+
+  \item \textbf{Vertical elevation.} After the radial motion has
+        stopped and any induced disturbance has decayed, the carrier is
+        pushed vertically upward by a height sufficient to place its
+        active surface above the disk's residual boundary layer. The
+        cross-section presented to the gas during this motion is the
+        full planform $L_c \times W_c = 160 \times \SI{160}{mm}$, but
+        the velocity is low and the travel distance is small
+        ($\sim\SI{5}{mm}$).
+\end{enumerate}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Comparison of Geometries}
+\label{sec:comparison}
+% ══════════════════════════════════════════════════════════════
+
+Table~\ref{tab:comparison} provides a side-by-side comparison of the
+two geometries.
+
+\begin{table}[H]
+\centering
+\caption{Side-by-side comparison of Geometry A (propeller) and
+Geometry B (rotating disk). Default parameters: $N = 8$,
+$c = \SI{0.22}{m}$, $h_\mathrm{disk} = \SI{5}{mm}$.}
+\label{tab:comparison}
+\begin{tabular}{lll}
+\toprule
+Property & A: Propeller & B: Disk \\
+\midrule
+Rotating element
+  & $N$ isolated blades
+  & Solid disk \\
+Radius
+  & \SI{1.6}{m}
+  & \SI{1.6}{m} \\
+Thickness
+  & \SI{26.4}{mm} (blade)
+  & \SI{5}{mm} (disk) \\
+Cross-section
+  & NACA\,0012 airfoil
+  & Flat plate (sharp edge) \\
+Angle of attack
+  & $0^\circ$
+  & N/A (flat disk) \\
+Upper surface area
+  & $N R c = \SI{2.82}{m^2}$
+  & $\pi R^2 = \SI{8.04}{m^2}$ \\
+Gas contact
+  & Isolated blades with gaps
+  & Continuous surface \\
+Max sweep angle
+  & $\pi/N = \SI{22.5}{\degree}$
+  & $\pi/N = \SI{22.5}{\degree}$ \\
+Radial tip clearance
+  & \SI{5}{mm}
+  & \SI{5}{mm} \\
+Vessel height
+  & \SI{1.5}{m}
+  & \SI{1.5}{m} \\
+BL type (during rotation)
+  & Airfoil BL on each blade
+  & Von K\'arm\'an rotating-disk BL \\
+Edge geometry
+  & Streamlined (NACA\,0012 TE)
+  & Blunt (disk rim, \SI{5}{mm} step) \\
+Blockage at rim
+  & $t_\mathrm{max}/\Delta r = 5.3$
+  & $h_\mathrm{disk}/\Delta r = 1.0$ \\
+Post-stop carrier motion
+  & None (blades are the sensors)
+  & Radial slide + vertical elevation \\
+Moving mass per event (gas disturbance)
+  & All $N$ blades
+  & Disk (rotation) + 1 carrier \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key Geometric Differences}
+
+\paragraph{Surface continuity.}
+The propeller exposes $N$ isolated blades to the gas; between the
+blades the gas column extends unobstructed from the vessel floor to
+the lid. The disk, by contrast, presents a continuous solid surface of
+$\pi R^2 \approx \SI{8}{m^2}$ that separates the gas volume into two
+regions: below the disk (a thin layer between disk and floor) and above
+the disk (the main volume, $\sim\SI{1.5}{m}$ tall).
+
+\paragraph{Edge geometry.}
+The propeller blades have a streamlined NACA\,0012 trailing edge, which
+produces a thin, low-drag wake. The disk has a blunt rim of height
+$h_\mathrm{disk}$, which produces a larger separated wake at the edge.
+However, the disk rim occupies only the annular region at
+$r \approx R$, while the bulk of the disk surface is smooth and flat.
+
+\paragraph{Thickness and blockage.}
+The NACA\,0012 blade is much thicker than the disk
+(\SI{26.4}{mm} vs.\ \SI{5}{mm} for default parameters). In the
+\SI{5}{mm} radial gap, the blade blockage ratio is 5.3 (the blade is
+thicker than the gap), while the disk blockage ratio is 1.0 (disk edge
+just fills the gap). The propeller chord $c$ is a free parameter and
+can be reduced to lower the blockage, at the cost of reduced detector
+area.
+
+\paragraph{Boundary layer character.}
+On the propeller, each blade develops an independent airfoil-type
+boundary layer (Blasius/turbulent flat-plate type) whose thickness
+depends on chord $c$ and local Reynolds number. On the disk, the
+boundary layer is a \emph{von K\'arm\'an rotating-disk} boundary layer:
+it has both tangential and radial velocity components, and its thickness
+scales as $\delta \sim \sqrt{\nu/\omega}$, independent of radius
+(in the laminar regime). This is a qualitatively different flow.
+
+\paragraph{Carrier motion (Geometry B only).}
+In Geometry~B, after the disk stops, a carrier plate must slide
+radially and then be elevated vertically. These additional motions
+create their own flow disturbances, which must also decay before
+measurement. Geometry~A has no such additional motion --- the blades
+themselves are the sensor elements (or sit directly beneath the sensing
+region).
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Parameters for Analysis}
+\label{sec:params}
+% ══════════════════════════════════════════════════════════════
+
+The flow analysis for both geometries requires the following input
+parameters:
+
+\begin{table}[H]
+\centering
+\caption{Input parameters for the flow analysis.}
+\label{tab:params_analysis}
+\begin{tabular}{llll}
+\toprule
+Symbol & Description & Default & Geometry \\
+\midrule
+$N$  & Number of blades / ion plates & 8 & Both \\
+$c$  & Blade chord & \SI{0.22}{m} & A only \\
+$h_\mathrm{disk}$ & Disk thickness & \SI{5}{mm} & B only \\
+$T_\mathrm{sweep}$ & Sweep duration & \SI{1.0}{s} & Both \\
+$z_\mathrm{obs}$ & Observation height above surface & \SI{10}{mm} & Both \\
+$t_\mathrm{obs}$ & Observation time after stop & \SI{1.0}{s} & Both \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Fixed parameters common to both geometries are listed in
+Tables~\ref{tab:propA} and~\ref{tab:geomB}, and the vessel/gas
+properties in Section~\ref{sec:vessel}.
+
+\end{document}

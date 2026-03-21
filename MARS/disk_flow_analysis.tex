@@ -1,0 +1,736 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{Residual Gas Velocity Above a Stopped Rotating Disk\\
+       in Dense Xenon: A Mechanism-by-Mechanism Analysis}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ══════════════════════════════════════════════════════════════
+\section{Problem Definition}
+\label{sec:problem}
+% ══════════════════════════════════════════════════════════════
+
+A solid horizontal disk of radius $R$ rotates inside a vertical
+cylindrical vessel filled with xenon gas at high pressure. The disk
+sweeps through a prescribed angle $\theta_\mathrm{sweep}$ using
+bang-bang kinematics (maximum acceleration then maximum deceleration),
+starting from rest and returning to rest. We seek the residual gas
+velocity at a height $z_\mathrm{obs}$ above the disk surface, evaluated
+at a time $t_\mathrm{obs}$ after the disk has stopped.
+
+Unlike the propeller geometry (isolated NACA\,0012 blades), the disk
+presents a \emph{continuous solid surface} of area $\pi R^2$ to the gas
+above. The boundary layer is a von K\'arm\'an rotating-disk boundary
+layer, which is qualitatively different from a flat-plate airfoil BL.
+
+\subsection{Parameters}
+
+Seven parameters are treated as variable inputs; all others are fixed.
+
+\begin{table}[H]
+\centering
+\caption{Variable parameters (with default values).}
+\label{tab:params}
+\begin{tabular}{llll}
+\toprule
+Symbol & Description & Default & Units \\
+\midrule
+$h_\mathrm{disk}$        & Disk thickness                  & 0.005 & m   \\
+$\theta_\mathrm{sweep}$  & Sweep angle                     & $\pi/8$ & rad \\
+$m_\mathrm{disk}$        & Mass of disk                    & 50    & kg  \\
+$m_\mathrm{plate}$       & Mass of each carrier plate      & 0.15  & kg  \\
+$\tau$                    & Motor torque                    & 60    & N$\cdot$m \\
+$z_\mathrm{obs}$         & Observation height above disk   & 0.005 & m \\
+$t_\mathrm{obs}$         & Observation time after stop     & 0.5   & s   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Fixed parameters.}
+\label{tab:fixed}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Description \\
+\midrule
+$R$            & \SI{1.6}{m}        & Disk radius \\
+$P$            & \SI{15}{bar}       & Xenon pressure \\
+$T$            & \SI{300}{K}        & Gas temperature \\
+$\Delta D$     & \SI{0.010}{m}      & Vessel inner diameter surplus \\
+$H$            & \SI{1.5}{m}        & Vessel height \\
+$N$            & 8                  & Number of carrier positions \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Geometry and Coordinate System}
+
+The disk rotates in the $xy$-plane with its upper surface at
+$z = h_\mathrm{disk}$ above the vessel floor. The $z$-axis points
+upward. The cylindrical vessel has inner radius
+\begin{equation}
+  R_\mathrm{cyl} = R + \frac{\Delta D}{2}\,,
+\end{equation}
+giving a radial gap $\Delta r = \Delta D/2 = \SI{5}{mm}$.
+The gas column above the disk has height
+$H_\mathrm{gas} = H - h_\mathrm{disk} \approx \SI{1.495}{m}$.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Xenon Gas Properties}
+\label{sec:gas}
+% ══════════════════════════════════════════════════════════════
+
+Identical to the propeller analysis. At $P = \SI{15}{bar}$,
+$T = \SI{300}{K}$:
+\begin{alignat}{2}
+  \rho  &= \frac{PM}{R_g T}
+        &&\approx \SI{79}{kg/m^3}\,,
+  \label{eq:rho}
+  \\[4pt]
+  \mu   &
+        &&\approx \SI{2.32e-5}{Pa\cdot s}\,,
+  \\[4pt]
+  \nu   &= \mu/\rho
+        &&\approx \SI{2.94e-7}{m^2/s}\,,
+  \\[4pt]
+  c_s   &= \sqrt{\gamma R_g T / M}
+        &&\approx \SI{178}{m/s}\,.
+\end{alignat}
+The key feature: $\nu$ is \emph{very} small ($51\times$ smaller than
+air at STP), leading to high Reynolds numbers at modest velocities and
+extremely slow molecular diffusion.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Kinematics}
+\label{sec:kinematics}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Moment of Inertia}
+
+The disk is a uniform solid cylinder of mass $m_\mathrm{disk}$ and
+radius $R$:
+\begin{equation}
+  I_\mathrm{disk} = \tfrac{1}{2}\,m_\mathrm{disk}\,R^2\,.
+  \label{eq:Idisk}
+\end{equation}
+The $N$ carrier plates are housed in the hangar at $r \approx R$:
+\begin{equation}
+  I_\mathrm{plates} = N\,m_\mathrm{plate}\,R^2\,.
+  \label{eq:Iplates}
+\end{equation}
+Total:
+\begin{equation}
+  I = I_\mathrm{disk} + I_\mathrm{plates}
+    = \tfrac{1}{2}\,m_\mathrm{disk}\,R^2 + N\,m_\mathrm{plate}\,R^2\,.
+  \label{eq:Itotal}
+\end{equation}
+
+For default parameters ($m_\mathrm{disk} = \SI{50}{kg}$,
+$m_\mathrm{plate} = \SI{0.15}{kg}$, $N = 8$):
+$I_\mathrm{disk} = \SI{64.0}{kg\cdot m^2}$,
+$I_\mathrm{plates} = \SI{3.07}{kg\cdot m^2}$,
+$I = \SI{67.1}{kg\cdot m^2}$.
+
+\subsection{Aerodynamic Drag Torque}
+
+A rotating disk in a fluid experiences a resisting torque from skin
+friction on both the upper and lower surfaces. For a turbulent boundary
+layer on one side of the disk, the moment coefficient is
+(Schlichting \& Gersten, \emph{Boundary-Layer Theory}, 9th ed., Ch.~5):
+\begin{equation}
+  C_M = \frac{0.146}{\mathrm{Re}_R^{1/5}}\,,
+  \label{eq:CM}
+\end{equation}
+where $\mathrm{Re}_R = \omega R^2 / \nu$ is the rotational Reynolds
+number. The torque on one side is
+\begin{equation}
+  \tau_\mathrm{one\,side} = \tfrac{1}{2}\,C_M\,\rho\,\omega^2\,R^5\,.
+  \label{eq:tau_side}
+\end{equation}
+For two sides (upper and lower):
+\begin{equation}
+  \tau_\mathrm{drag} = C_M\,\rho\,\omega^2\,R^5\,.
+  \label{eq:tau_drag}
+\end{equation}
+Note that $C_M$ depends on $\omega$ through $\mathrm{Re}_R$, making
+the drag nonlinear. For the edge contribution (rim drag), we add a
+bluff-body drag on the annular edge of thickness $h_\mathrm{disk}$:
+\begin{equation}
+  \tau_\mathrm{rim} = \tfrac{1}{2}\,\rho\,C_{d,\mathrm{rim}}\,
+    h_\mathrm{disk}\,R^4\,\omega^2\,,
+  \label{eq:tau_rim}
+\end{equation}
+with $C_{d,\mathrm{rim}} \approx 1.0$ (blunt edge, Hoerner,
+\emph{Fluid-Dynamic Drag}, Ch.~3).
+
+\subsection{Bang-Bang Motion}
+
+The equation of motion is
+\begin{equation}
+  I\,\frac{d\omega}{dt} = \pm\tau_\mathrm{motor}
+    - \tau_\mathrm{drag}(\omega) - \tau_\mathrm{rim}(\omega)\,,
+\end{equation}
+where the sign alternates between acceleration and deceleration phases.
+The switching angle $\theta_\mathrm{switch}$ is found numerically such
+that $\omega \to 0$ exactly when $\theta \to \theta_\mathrm{sweep}$.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Boundary Layer: Von K\'arm\'an Rotating Disk}
+\label{sec:BL}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{The Classical Problem}
+
+The boundary layer on an infinite rotating disk in an otherwise
+quiescent fluid was solved by von K\'arm\'an (1921) and refined by
+Cochran (1934). The key result: the BL thickness is
+\emph{independent of radius} and depends only on rotation rate and
+viscosity:
+\begin{equation}
+  \delta = a\,\sqrt{\frac{\nu}{\omega}}\,,
+  \label{eq:delta_vK}
+\end{equation}
+where $a \approx 5.5$ (laminar, Schlichting \& Gersten, Ch.~5.2).
+The BL has three velocity components:
+\begin{itemize}
+  \item \textbf{Tangential} ($v_\phi$): the gas near the disk is
+        dragged in the direction of rotation.
+  \item \textbf{Radial} ($v_r$): centrifugal force pushes the gas
+        outward within the BL.
+  \item \textbf{Axial} ($v_z$): to replace the gas expelled radially,
+        fresh gas is drawn downward from above the BL. This is the
+        \emph{von K\'arm\'an pumping} effect.
+\end{itemize}
+
+The axial (pumping) velocity far from the disk is
+(von K\'arm\'an, 1921; Cochran, 1934):
+\begin{equation}
+  w_\infty = -0.886\,\sqrt{\nu\,\omega}
+  \qquad\text{(laminar)}\,.
+  \label{eq:w_inf_lam}
+\end{equation}
+The negative sign indicates flow \emph{toward} the disk. This means
+the rotating disk \emph{sucks gas down from above} uniformly across
+its entire surface.
+
+\subsection{Turbulent Regime}
+
+The rotating-disk BL transitions to turbulence at
+$\mathrm{Re}_r = \omega r^2 / \nu \approx 2.5 \times 10^5$
+(Lingwood, 1995). In the turbulent regime, the BL thickness grows:
+\begin{equation}
+  \delta_\mathrm{turb} \approx 0.526\,r\,
+    \left(\frac{\nu}{\omega r^2}\right)^{1/5}
+  = 0.526\,r\,\mathrm{Re}_r^{-1/5}\,,
+  \label{eq:delta_turb}
+\end{equation}
+(Owen \& Rogers, \emph{Flow and Heat Transfer in Rotating-Disc Systems},
+Vol.~1, 1989). Unlike the laminar case, the turbulent BL thickness
+\emph{increases with radius}.
+
+The turbulent axial pumping velocity also increases:
+\begin{equation}
+  w_\infty^\mathrm{turb} \approx -C_w\,\sqrt{\nu_t\,\omega}\,,
+  \label{eq:w_inf_turb}
+\end{equation}
+where the turbulent viscosity $\nu_t \gg \nu$. A more practical
+estimate uses the entrainment flow rate. The volumetric flow entrained
+by one side of the disk (turbulent) is
+(Owen \& Rogers, 1989):
+\begin{equation}
+  Q = 0.219\,\mathrm{Re}_R^{4/5}\,\nu\,R\,,
+  \label{eq:Q_turb}
+\end{equation}
+where $\mathrm{Re}_R = \omega R^2 / \nu$. The mean axial velocity at
+the disk edge (over the disk area):
+\begin{equation}
+  \bar{w}_\mathrm{axial} = \frac{Q}{\pi R^2}\,.
+  \label{eq:w_mean}
+\end{equation}
+
+\subsection{Relevance to the MARS Problem}
+
+This is the fundamental difference from the propeller: a rotating
+disk has an \emph{intrinsic axial pumping velocity} that draws gas
+\emph{toward} the disk surface. During rotation, this sets up a
+meridional circulation (radially outward in the BL, axially downward
+above the disk). After the disk stops, this circulation must decay.
+
+The question is: how quickly does the axial flow decay, and what is its
+magnitude at $z = z_\mathrm{obs}$ at time $t = t_\mathrm{obs}$?
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 1: Von K\'arm\'an Pumping and Decay}
+\label{sec:pumping}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Axial Velocity During Rotation}
+
+During steady rotation at angular velocity $\omega$, the axial
+(pumping) velocity depends on height above the disk. In the laminar
+regime (Cochran's solution):
+\begin{equation}
+  w(z) = -\sqrt{\nu\omega}\;H_\mathrm{vK}(\zeta)\,,
+  \qquad \zeta = z\sqrt{\omega/\nu}\,,
+\end{equation}
+where $H_\mathrm{vK}(\zeta)$ is a universal function that increases
+from $0$ at $\zeta = 0$ (disk surface, no-penetration) to $0.886$ as
+$\zeta \to \infty$. The asymptotic value is reached for
+$\zeta \gtrsim 5$ (i.e.\ $z \gtrsim \delta$).
+
+For the turbulent regime at the outer part of the disk, the pumping is
+stronger. The mean downward velocity can be estimated from the
+entrainment flow rate~\eqref{eq:Q_turb}.
+
+\subsection{Decay After Stopping}
+
+When the disk stops at $t = 0$, the forcing that sustains the BL and
+the pumping vanishes instantaneously. The decay proceeds through
+several stages:
+
+\paragraph{Stage 1: Turbulent decay ($0 < t \lesssim 2\,t_e$).}
+The turbulent eddies in the BL lose their energy source and decay on
+the eddy turnover timescale:
+\begin{equation}
+  t_e = \frac{\delta}{\omega\,r \cdot 0.05}\,,
+\end{equation}
+where $0.05\,\omega r$ is the turbulence intensity. The turbulent
+viscosity decays exponentially with $e$-folding time $\sim 2\,t_e$.
+During this period the BL profile changes from a turbulent
+$1/7$-power law to a lower-energy state.
+
+\paragraph{Stage 2: Molecular spin-down ($t \gg 2\,t_e$).}
+After the turbulence dies, only molecular viscosity remains. The
+tangential and radial velocity components diffuse outward from the
+disk surface. The tangential velocity profile evolves as
+\begin{equation}
+  v_\phi(z,t) \sim V_\phi(0)\,
+    \mathrm{erfc}\!\left(\frac{z}{2\sqrt{\nu t}}\right),
+\end{equation}
+where $V_\phi(0)$ is the initial tangential velocity at the edge of
+the decayed BL. This is the classical Stokes first problem
+(Schlichting \& Gersten, Ch.~4.3).
+
+\paragraph{Axial velocity.}
+The axial pumping is \emph{driven by} the tangential and radial
+velocities in the BL via the continuity equation. Once the tangential
+velocity decays (no more centrifugal force in the BL), the radial
+outflow ceases, and the axial inflow ceases with it. The axial
+velocity decays on the \emph{same timescale} as the tangential BL.
+
+The axial pumping velocity scales as $w \sim \sqrt{\nu_\mathrm{eff}\,
+\omega_\mathrm{eff}}$ where $\omega_\mathrm{eff}$ is the effective
+angular velocity of the gas near the disk surface. As
+$\omega_\mathrm{eff} \to 0$, $w \to 0$.
+
+\subsection{Quantitative Estimate}
+
+\paragraph{During rotation (peak values).}
+The peak angular velocity $\omega_\mathrm{max}$ is obtained from the
+bang-bang kinematics. The laminar pumping velocity:
+\begin{equation}
+  w_\mathrm{lam} = 0.886\,\sqrt{\nu\,\omega_\mathrm{max}}\,.
+  \label{eq:w_lam_peak}
+\end{equation}
+
+The turbulent entrainment flow rate gives the mean axial velocity
+over the disk area. This represents the steady-state value during
+rotation.
+
+\paragraph{After stop.}
+The PDE governing the tangential velocity is
+\begin{equation}
+  \frac{\partial v_\phi}{\partial t}
+  = \frac{\partial}{\partial z}\left[
+    \nu_\mathrm{eff}(z,t)\,\frac{\partial v_\phi}{\partial z}
+  \right],
+  \label{eq:vphi_PDE}
+\end{equation}
+with $v_\phi(0,t) = 0$ (no-slip on stopped disk),
+$v_\phi(z \to \infty, t) = 0$, and initial condition from the
+von K\'arm\'an profile. This is essentially the same 1D diffusion
+equation as for the propeller, but with a different initial condition
+and with the crucial difference that the initial profile extends over
+the entire disk area, not just $N$ narrow blade wakes.
+
+The axial velocity at $z_\mathrm{obs}$ is then obtained from continuity:
+\begin{equation}
+  w(z_\mathrm{obs}, t) \approx -\frac{\partial}{\partial r}
+    \int_0^{z_\mathrm{obs}} v_r(r,z,t)\,dz\,.
+\end{equation}
+In practice, for $z_\mathrm{obs} > \delta$, the axial velocity is
+estimated as $w \sim \sqrt{\nu_\mathrm{eff}(t) \cdot
+\omega_\mathrm{eff}(t)}$, which decays as both $\nu_t$ and
+$\omega_\mathrm{eff}$ decay.
+
+\subsection{Result}
+
+The von K\'arm\'an pumping produces a nonzero axial velocity
+\emph{during} rotation. After the disk stops, this axial velocity
+decays on the same timescale as the tangential BL. For
+$t_\mathrm{obs} \gg 2\,t_e$, the pumping has ceased. However, the
+magnitude and decay time depend strongly on the disk angular velocity.
+The companion Python script evaluates this numerically.
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs}) = \text{computed numerically;
+  see Python script}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 2: Tangential BL Diffusion}
+\label{sec:tangential}
+% ══════════════════════════════════════════════════════════════
+
+Even without the axial pumping, the tangential (azimuthal) velocity
+in the BL can in principle diffuse vertically, exactly as in the
+propeller case.
+
+\subsection{Initial Tangential Profile}
+
+The von K\'arm\'an tangential velocity profile (turbulent,
+$1/7$-power law approximation):
+\begin{equation}
+  v_\phi(z) = \omega r \left[1 - \left(\frac{z}{\delta}\right)^{1/7}
+    \right]
+  \qquad (0 < z \le \delta)\,,
+\end{equation}
+where $\delta$ is the local turbulent BL thickness. At the tip
+($r = R$), $v_\phi(0) = \omega R = V_\mathrm{tip}$.
+
+\subsection{Diffusion Equation}
+
+Same 1D diffusion equation as for the propeller:
+\begin{equation}
+  \frac{\partial v_\phi}{\partial t}
+  = \frac{\partial}{\partial z}
+    \left[\nu_\mathrm{eff}(z,t)\,\frac{\partial v_\phi}{\partial z}
+    \right],
+\end{equation}
+with initial condition from the von K\'arm\'an profile and decaying
+$\nu_t$.
+
+\subsection{Key Difference from Propeller}
+
+The propeller BL has thickness $\delta = 0.37\,c\,\mathrm{Re}_c^{-1/5}$,
+which depends on the chord $c$. The disk BL thickness at radius $r$ is
+$\delta = 0.526\,r\,\mathrm{Re}_r^{-1/5}$, which depends on \emph{radius}.
+At the outer edge ($r = R = \SI{1.6}{m}$), the disk BL is much thicker
+than a propeller blade BL (because $R \gg c$).
+
+Whether $z_\mathrm{obs} - \delta > 0$ (observation above the BL) or
+$z_\mathrm{obs} - \delta < 0$ (observation inside the BL) depends on
+the disk angular velocity and observation height.
+
+\subsection{Result}
+
+The 1D PDE solver evaluates the tangential velocity at $z_\mathrm{obs}$,
+$t_\mathrm{obs}$. If $z_\mathrm{obs} > \delta + \ell_\mathrm{turb}
++ \ell_\mathrm{mol}$, the result is zero. If the observation point is
+close to $\delta$, a small nonzero tail may exist (same as propeller).
+
+\begin{equation}
+  \boxed{v_\phi(z_\mathrm{obs},\, t_\mathrm{obs}) = \text{computed
+  numerically; see Python script}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 3: Bulk Swirl / Ekman Spin-Down}
+\label{sec:swirl}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Angular Impulse}
+
+The disk drag torque deposits angular momentum in the gas. Unlike the
+propeller (where the drag acts on $N$ narrow blades), the disk torque
+acts over the entire disk surface:
+\begin{equation}
+  \tau_\mathrm{drag}
+    = C_M\,\rho\,\omega^2\,R^5 + \tfrac{1}{2}\,\rho\,C_{d,\mathrm{rim}}
+      \,h_\mathrm{disk}\,R^4\,\omega^2\,.
+\end{equation}
+The angular impulse over the sweep is $J = \int_0^{T_\mathrm{sweep}}
+\tau_\mathrm{drag}\,dt$.
+
+\subsection{Ekman Spin-Down}
+
+In a confined vessel, the bulk swirl decays via the Ekman mechanism:
+endcap boundary layers transport angular momentum to the walls. The
+Ekman spin-down time is
+\begin{equation}
+  t_\mathrm{Ekman} = \frac{H}{\sqrt{\nu\,\Omega_\mathrm{gas}}}\,,
+\end{equation}
+where $\Omega_\mathrm{gas}$ is the characteristic gas rotation rate.
+For molecular $\nu$, this is $\sim\SI{1000}{s}$; for turbulent $\nu_t$
+(lasting $\sim\SI{10}{ms}$), $\sim\SI{50}{s}$.
+
+The Ekman pumping velocity $w_E = \sqrt{\nu\,\Omega}$ is of order
+$\sim\SI{1}{mm/s}$ (molecular), producing negligible vertical
+displacement in $t_\mathrm{obs}$.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    \approx 0 \quad \text{(bulk Ekman spin-down)}}
+\end{equation}
+Same conclusion as for the propeller: the Ekman mechanism is far too
+slow to affect the observation.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 4: Displacement (Potential) Flow}
+\label{sec:potential}
+% ══════════════════════════════════════════════════════════════
+
+As the disk rotates, the rim (a blunt edge of height $h_\mathrm{disk}$)
+pushes gas aside. The displacement flow around the rim produces a
+transient velocity field that decays at the speed of sound after the
+disk stops.
+
+\subsection{Clearing Time}
+
+\begin{equation}
+  t_\mathrm{acoustic} = \frac{R}{c_s}
+    \approx \frac{\SI{1.6}{m}}{\SI{178}{m/s}}
+    \approx \SI{9}{ms}\,.
+\end{equation}
+
+\subsection{Blockage}
+
+The disk blockage ratio is $h_\mathrm{disk}/\Delta r = 1.0$ (for
+default parameters), much smaller than the propeller blade blockage
+(5.3). The displacement flow is correspondingly weaker.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(displacement flow, for }
+    t_\mathrm{obs} \gg t_\mathrm{acoustic}\text{)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 5: Pressure Pulse from Deceleration}
+\label{sec:pressure}
+% ══════════════════════════════════════════════════════════════
+
+Same physics as for the propeller. The deceleration of the disk
+creates a transient pressure perturbation:
+\begin{equation}
+  \Delta p \sim \rho\,V_\mathrm{tip}^2\,,
+\end{equation}
+which propagates as an acoustic wave passing through $z_\mathrm{obs}$
+in $\sim z_\mathrm{obs}/c_s$ and leaving no residual.
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(pressure pulse, for }
+    t_\mathrm{obs} \gg t_\mathrm{decel}\text{)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 6: Rim Separation and Wake}
+\label{sec:rim}
+% ══════════════════════════════════════════════════════════════
+
+The disk has a blunt rim of height $h_\mathrm{disk}$, which produces
+flow separation at the edge during rotation. Unlike the streamlined
+NACA\,0012 trailing edge of the propeller, the disk edge generates a
+separated wake.
+
+\subsection{Wake Character}
+
+The separated wake at the rim is \emph{tangential}: it lies in the
+plane of the disk edge, in the annular gap between the disk and the
+vessel wall. The wake has a vertical extent of order $\sim h_\mathrm{disk}
+= \SI{5}{mm}$, and its velocity decays after the disk stops.
+
+\subsection{Vertical Transport}
+
+The rim wake is tangential and confined to the disk-edge plane. It does
+not have an axial velocity component directed upward toward
+$z_\mathrm{obs}$. The same transport limitations as for the propeller
+vortex shedding apply: vertical diffusion from the rim wake is limited
+by the same BL-thickness-plus-diffusion reach constraint.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(rim wake, confined to edge)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Mechanism 7: Secondary Flows (Centrifugal, Coriolis)}
+\label{sec:secondary}
+% ══════════════════════════════════════════════════════════════
+
+\subsection{Centrifugal Effects in the Bulk}
+
+Gas in the bulk (above the BL) that has acquired angular momentum is
+subject to centrifugal force. This drives radial outflow, which must
+be compensated by axial inflow from above (this is the von K\'arm\'an
+pumping, already treated in Section~\ref{sec:pumping}).
+
+After the disk stops, the centrifugal force decays with the angular
+velocity of the gas. No new mechanism beyond what is already accounted
+for in Section~\ref{sec:pumping}.
+
+\subsection{Rim-Gap Couette Flow}
+
+In the radial clearance $\Delta r$ between the disk edge and the vessel
+wall:
+\begin{equation}
+  \mathrm{Re}_\mathrm{gap}
+    = \frac{V_\mathrm{tip}\,\Delta r}{\nu}\,.
+\end{equation}
+This flow is purely tangential (azimuthal shear between moving disk
+edge and stationary wall), with no axial velocity component. Same
+conclusion as for the propeller tip gap.
+
+\subsection{Result}
+
+\begin{equation}
+  \boxed{u(z_\mathrm{obs},\, t_\mathrm{obs})
+    = 0 \quad \text{(secondary flows)}}
+\end{equation}
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Vessel Confinement Effects}
+\label{sec:confinement}
+% ══════════════════════════════════════════════════════════════
+
+The same confinement analysis as for the propeller applies. All five
+effects (wall BLs, Ekman spin-up, tip-gap Couette, reflected pressure
+waves, displacement readjustment) are quantified in the companion
+Python script and shown to be negligible. See the propeller analysis
+(\texttt{propeller\_flow\_analysis.tex}, Section~7) for the detailed
+treatment; the physics is identical.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Key Difference from Propeller: Axial Pumping}
+\label{sec:comparison}
+% ══════════════════════════════════════════════════════════════
+
+The propeller analysis found that \emph{all} mechanisms give zero at
+$z_\mathrm{obs}$ (provided $z_\mathrm{obs} - \delta > \sim\SI{2}{mm}$).
+For the rotating disk, the situation is qualitatively different because
+of the \textbf{von K\'arm\'an pumping}:
+
+\begin{itemize}
+  \item The propeller blades have no axial flow: at $\alpha = 0$, the
+        NACA\,0012 produces no lift and no axial pressure gradient. All
+        flow is tangential.
+  \item The rotating disk intrinsically generates an axial velocity
+        ($w_\infty = -0.886\sqrt{\nu\omega}$ in the laminar regime,
+        stronger in the turbulent regime). This is a \emph{volume effect}:
+        the entire disk area participates.
+  \item The pumping extends to $z \to \infty$ (in an infinite domain),
+        meaning it reaches $z_\mathrm{obs}$ during rotation.
+  \item After the disk stops, the pumping decays as the BL tangential
+        velocity decays. The question is whether this decay is fast
+        enough.
+\end{itemize}
+
+The BL thickness is also much larger for the disk than for the
+propeller. At the disk edge ($r = R = \SI{1.6}{m}$):
+\begin{equation}
+  \delta_\mathrm{disk}(R) = 0.526\,R\,\mathrm{Re}_R^{-1/5}\,,
+\end{equation}
+compared with the propeller:
+\begin{equation}
+  \delta_\mathrm{prop} = 0.37\,c\,\mathrm{Re}_c^{-1/5}\,.
+\end{equation}
+Since $R = \SI{1.6}{m} \gg c = \SI{0.22}{m}$, the disk BL is
+significantly thicker, potentially engulfing $z_\mathrm{obs}$.
+
+Both quantities (pumping velocity and BL thickness) are evaluated
+numerically in the companion Python script.
+
+
+% ══════════════════════════════════════════════════════════════
+\section{Conclusion}
+\label{sec:conclusion}
+% ══════════════════════════════════════════════════════════════
+
+Table~\ref{tab:summary} summarises all mechanisms.
+
+\begin{table}[H]
+\centering
+\caption{Summary of all mechanisms for residual velocity at
+$z_\mathrm{obs}$ above the disk, $t_\mathrm{obs}$ after stopping.}
+\label{tab:summary}
+\begin{tabular}{llc}
+\toprule
+Mechanism & Characteristic timescale / Comment
+  & $u(z_\mathrm{obs}, t_\mathrm{obs})$ \\
+\midrule
+Von K\'arm\'an pumping (axial)
+  & Decays with BL tangential velocity
+  & Numerical \\
+Tangential BL diffusion
+  & Same as propeller eddy diffusion
+  & Numerical \\
+Bulk Ekman spin-down
+  & $t_\mathrm{Ekman} \sim \SI{1000}{s}$ (mol.)
+  & 0 \\
+Displacement flow
+  & $t_\mathrm{acoustic} \approx \SI{9}{ms}$
+  & 0 \\
+Pressure pulse
+  & $t_\mathrm{decel} \sim \SI{10}{ms}$
+  & 0 \\
+Rim wake
+  & Confined to disk edge
+  & 0 \\
+Secondary flows
+  & Centrifugal decays with $\omega$; gap flow tangential
+  & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The critical difference from the propeller is the \textbf{von K\'arm\'an
+pumping}, which provides a direct axial velocity mechanism that extends
+above the disk BL. The propeller has no such mechanism. Whether this
+makes the disk geometry worse depends on the decay rate of the pumping
+after the disk stops, which is evaluated quantitatively in the companion
+script \texttt{disk\_flow\_numerics.py}.
+
+A second concern is the \textbf{BL thickness}: the disk BL at $r = R$
+may be thick enough to engulf $z_\mathrm{obs}$, in which case the
+observation point is inside the BL and the velocity is necessarily
+nonzero. The propeller BL (chord-based) is thinner.
+
+\end{document}
