@@ -17,6 +17,8 @@ Options:
     --tau_motor    Motor torque [N·m]                   (default: 60.0)
     --z_obs        Observation height above disk [m]    (default: 0.005)
     --t_obs        Observation time after stop [s]      (default: 0.5)
+    --numeric      Run full numerical PDE solver        (default: analytical)
+    --drag         Include aerodynamic drag in kinematics (default: no drag)
 
 Fixed parameters:
     R = 1.6 m, P = 15 bar, T = 300 K, vessel height H = 1.5 m,
@@ -73,6 +75,14 @@ def parse_args():
         "--t_obs", type=float, default=0.5,
         help="Observation time after stop [s] (default: 0.5)"
     )
+    parser.add_argument(
+        "--numeric", action="store_true",
+        help="Run full numerical PDE solver for BL diffusion (default: analytical)"
+    )
+    parser.add_argument(
+        "--drag", action="store_true",
+        help="Include aerodynamic drag in kinematics (default: analytical no-drag)"
+    )
     return parser.parse_args()
 
 
@@ -101,10 +111,54 @@ def compute_gas_properties():
 
 
 # ═══════════════════════════════════════════════════════════════
-# Kinematics: bang-bang with aerodynamic drag
+# Kinematics: bang-bang motion
 # ═══════════════════════════════════════════════════════════════
-def compute_bangbang_kinematics(m_disk, m_plate, N_plates, tau_motor,
-                                 sweep_angle, rho, nu, h_disk):
+def compute_bangbang_kinematics_analytical(m_disk, m_plate, N_plates, tau_motor,
+                                            sweep_angle):
+    """
+    Compute bang-bang motion kinematics WITHOUT aerodynamic drag (fast analytical).
+
+    For pure bang-bang motion with constant acceleration/deceleration:
+        α = τ/I                    (angular acceleration)
+        θ_switch = θ/2             (switch at midpoint)
+        ω_max = √(θ·τ/I)           (peak angular velocity)
+        t_rot = 2√(θ·I/τ)          (total rotation time)
+        V_tip = ω_max × R          (peak tip velocity)
+
+    Returns dict with inertia and kinematics.
+    """
+    # ── Moment of inertia ──
+    I_disk = 0.5 * m_disk * R_disk**2
+    I_plates = N_plates * m_plate * R_disk**2
+    I_total = I_disk + I_plates
+
+    # ── Closed-form kinematics (no drag) ──
+    alpha = tau_motor / I_total
+    t_rot = 2.0 * np.sqrt(sweep_angle * I_total / tau_motor)
+    omega_max = np.sqrt(sweep_angle * tau_motor / I_total)
+    theta_switch = sweep_angle / 2.0
+    t_accel = t_rot / 2.0
+    t_decel = t_rot / 2.0
+    V_tip_max = omega_max * R_disk
+
+    return {
+        "I_disk": I_disk,
+        "I_plates": I_plates,
+        "I_total": I_total,
+        "alpha": alpha,
+        "theta_switch": theta_switch,
+        "t_accel": t_accel,
+        "t_decel": t_decel,
+        "t_rot": t_rot,
+        "omega_max": omega_max,
+        "V_tip_max": V_tip_max,
+        "theta_final": sweep_angle,
+        "method": "analytical",
+    }
+
+
+def compute_bangbang_kinematics_numerical(m_disk, m_plate, N_plates, tau_motor,
+                                           sweep_angle, rho, nu, h_disk):
     """
     Compute bang-bang motion kinematics for the rotating disk WITH
     aerodynamic drag (skin friction + rim drag).
@@ -229,7 +283,29 @@ def compute_bangbang_kinematics(m_disk, m_plate, N_plates, tau_motor,
         "tau_rim_peak": tau_rim_peak,
         "drag_time_increase": drag_ratio,
         "omega_reduction": omega_reduction,
+        "method": "numerical",
     }
+
+
+def compute_bangbang_kinematics(m_disk, m_plate, N_plates, tau_motor,
+                                 sweep_angle, rho, nu, h_disk, drag=False):
+    """
+    Wrapper for bang-bang kinematics calculation.
+
+    Parameters:
+        drag: If True, run numerical ODE solver with aerodynamic drag.
+              If False (default), use closed-form analytical solution.
+
+    Both methods return compatible dict structures.
+    """
+    if drag:
+        return compute_bangbang_kinematics_numerical(
+            m_disk, m_plate, N_plates, tau_motor, sweep_angle, rho, nu, h_disk
+        )
+    else:
+        return compute_bangbang_kinematics_analytical(
+            m_disk, m_plate, N_plates, tau_motor, sweep_angle
+        )
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -384,8 +460,113 @@ def mechanism_vk_pumping(omega, nu, delta, nu_t_outer, V_tip, z_obs, t_obs):
 # ═══════════════════════════════════════════════════════════════
 # Mechanism 2: Tangential BL diffusion (same as propeller)
 # ═══════════════════════════════════════════════════════════════
-def mechanism_tangential_diffusion(V_tip, delta, delta_star, u_tau, nu,
-                                    z_obs, t_obs):
+from scipy.special import erfc
+
+
+def mechanism_tangential_diffusion_analytical(V_tip, delta, delta_star, nu, z_obs, t_obs):
+    """
+    Analytical estimate for tangential BL diffusion (fast).
+
+    Uses diffusion length scales to determine if momentum can reach z_obs,
+    and if so, estimates the velocity using error function solutions.
+    Same approach as propeller eddy diffusion analytical.
+    """
+    # ── Turbulent viscosity parameters ──
+    nu_t_outer = 0.018 * V_tip * delta_star
+
+    # Turbulence intensity and eddy timescale
+    u_prime = 0.05 * V_tip
+    t_eddy = delta / u_prime if u_prime > 0 else 1e10
+    t_decay = 2.0 * t_eddy
+
+    # Diffusion length scales
+    ell_turb = np.sqrt(nu_t_outer * t_decay)
+    ell_mol = np.sqrt(nu * t_obs)
+    max_reach = delta + ell_turb + ell_mol
+
+    # Gap between BL top and observation point
+    gap = z_obs - delta
+
+    # ── Analytical estimate ──
+    if gap <= 0:
+        # Observation point is within the BL
+        zeta = z_obs / delta
+        v_initial = V_tip * (1.0 - zeta ** (1.0 / 7.0))
+        nu_eff_avg = nu + nu_t_outer * 0.5
+        t_char = delta**2 / nu_eff_avg
+        decay = np.exp(-t_obs / t_char)
+        v_at_obs = v_initial * decay
+    elif z_obs > max_reach:
+        # Momentum cannot reach observation point
+        v_at_obs = 0.0
+    else:
+        # Observation point is in the diffusion tail
+        if t_obs < t_decay:
+            ell_diff = np.sqrt(4.0 * (nu + nu_t_outer * 0.5) * t_obs)
+        else:
+            ell_diff = np.sqrt(4.0 * nu_t_outer * t_decay + 4.0 * nu * (t_obs - t_decay))
+
+        if ell_diff > 0:
+            eta = gap / ell_diff
+            v_at_obs = V_tip * 0.5 * erfc(eta)
+        else:
+            v_at_obs = 0.0
+
+        # Additional decay from no-slip absorption
+        absorption_factor = np.exp(-t_obs / t_decay)
+        v_at_obs *= absorption_factor
+
+    # Build velocity profile at selected heights
+    profile = {}
+    for zi_mm in [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 15, 20, 30, 50]:
+        zi = zi_mm * 1e-3
+        gap_i = zi - delta
+        if zi <= 0:
+            profile[zi_mm] = 0.0
+        elif gap_i <= 0:
+            zeta = zi / delta
+            v_init = V_tip * (1.0 - zeta ** (1.0 / 7.0))
+            nu_eff_avg = nu + nu_t_outer * 0.5
+            t_char = delta**2 / nu_eff_avg
+            profile[zi_mm] = v_init * np.exp(-t_obs / t_char)
+        elif zi > max_reach:
+            profile[zi_mm] = 0.0
+        else:
+            if t_obs < t_decay:
+                ell_diff = np.sqrt(4.0 * (nu + nu_t_outer * 0.5) * t_obs)
+            else:
+                ell_diff = np.sqrt(4.0 * nu_t_outer * t_decay + 4.0 * nu * (t_obs - t_decay))
+            if ell_diff > 0:
+                eta = gap_i / ell_diff
+                v_val = V_tip * 0.5 * erfc(eta) * np.exp(-t_obs / t_decay)
+            else:
+                v_val = 0.0
+            profile[zi_mm] = v_val
+
+    # Estimate momentum
+    mom_initial = V_tip * delta * 7.0 / 8.0
+    mom_fraction = np.exp(-t_obs / t_decay)
+
+    return {
+        "v_at_obs": v_at_obs,
+        "nu_t_outer": nu_t_outer,
+        "nu_t_over_nu": nu_t_outer / nu if nu > 0 else 0,
+        "u_prime": u_prime,
+        "t_eddy": t_eddy,
+        "t_decay": t_decay,
+        "ell_turb": ell_turb,
+        "ell_mol": ell_mol,
+        "max_reach": max_reach,
+        "mom_initial": mom_initial,
+        "mom_final": mom_initial * mom_fraction,
+        "mom_fraction": mom_fraction,
+        "profile": profile,
+        "method": "analytical",
+    }
+
+
+def mechanism_tangential_diffusion_numerical(V_tip, delta, delta_star, u_tau, nu,
+                                              z_obs, t_obs):
     """
     Solve the 1D diffusion equation for tangential momentum above
     the disk after it stops, with decaying turbulent viscosity.
@@ -484,7 +665,25 @@ def mechanism_tangential_diffusion(V_tip, delta, delta_star, u_tau, nu,
         "mom_final": mom_final,
         "mom_fraction": mom_final / mom_initial if mom_initial > 0 else 0,
         "profile": profile,
+        "method": "numerical",
     }
+
+
+def mechanism_tangential_diffusion(V_tip, delta, delta_star, u_tau, nu,
+                                    z_obs, t_obs, numeric=False):
+    """
+    Wrapper for tangential BL diffusion calculation.
+
+    Parameters:
+        numeric: If True, run full PDE solver. If False (default), use analytical estimate.
+
+    Both methods return the same dict structure for compatibility.
+    """
+    if numeric:
+        return mechanism_tangential_diffusion_numerical(V_tip, delta, delta_star, u_tau, nu,
+                                                         z_obs, t_obs)
+    else:
+        return mechanism_tangential_diffusion_analytical(V_tip, delta, delta_star, nu, z_obs, t_obs)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -640,6 +839,8 @@ if __name__ == "__main__":
     tau_motor = args.tau_motor
     z_obs = args.z_obs
     t_obs = args.t_obs
+    numeric = args.numeric
+    drag = args.drag
 
     DIVIDER = "=" * 70
 
@@ -680,41 +881,56 @@ if __name__ == "__main__":
 
     # ── Bang-bang kinematics ──
     bb = compute_bangbang_kinematics(
-        m_disk, m_plate, N_plates, tau_motor, sweep_angle, rho, nu, h_disk
+        m_disk, m_plate, N_plates, tau_motor, sweep_angle, rho, nu, h_disk, drag=drag
     )
     t_rot = bb["t_rot"]
     omega_max = bb["omega_max"]
     V_tip = bb["V_tip_max"]
 
     print(f"\n{DIVIDER}")
-    print("2. BANG-BANG KINEMATICS (with aerodynamic drag)")
+    if drag:
+        print("2. BANG-BANG KINEMATICS (with aerodynamic drag)")
+    else:
+        print("2. BANG-BANG KINEMATICS (analytical, no drag)")
     print(DIVIDER)
     print(f"  Moment of inertia:")
     print(f"    I_disk   = ½ m R²:        {bb['I_disk']:.2f} kg·m²")
     print(f"    I_plates = N m_plate R²:  {bb['I_plates']:.2f} kg·m²")
     print(f"    I_total:                  {bb['I_total']:.2f} kg·m²")
-    print(f"\n  Aerodynamic drag at peak ω:")
-    print(f"    Re_R = ω R²/ν:            {bb['Re_R_peak']:.3e}")
-    print(f"    C_M (turbulent skin):      {bb['C_M_peak']:.5f}")
-    print(f"    τ_skin (both sides):       {bb['tau_skin_peak']:.3f} N·m")
-    print(f"    τ_rim  (blunt edge):       {bb['tau_rim_peak']:.3f} N·m")
-    print(f"\n  Inertia-only reference (no drag):")
-    print(f"    α = τ/I = {bb['alpha_no_drag']:.3f} rad/s²")
-    print(f"    t_rot = {bb['t_rot_no_drag']*1000:.1f} ms")
-    print(f"    ω_max = {bb['omega_max_no_drag']:.4f} rad/s")
-    print(f"\n  With drag (numerical integration):")
-    print(f"    Switching angle:        θ_switch = {bb['theta_switch']:.5f} rad "
-          f"({np.degrees(bb['theta_switch']):.2f}°)")
-    print(f"    Accel time:             t_accel  = {bb['t_accel']*1000:.2f} ms")
-    print(f"    Decel time:             t_decel  = {bb['t_decel']*1000:.2f} ms")
-    print(f"    Total rotation time:    t_rot    = {t_rot*1000:.2f} ms")
-    print(f"    Peak ω:                 ω_max    = {omega_max:.5f} rad/s")
-    print(f"    Peak V_tip:             V_tip    = {V_tip:.4f} m/s")
-    print(f"    Final θ:                θ_final  = {bb['theta_final']:.5f} rad "
-          f"(target: {sweep_angle:.5f})")
-    print(f"\n  Drag impact:")
-    print(f"    Time increase:          {bb['drag_time_increase']*100:+.2f}%")
-    print(f"    ω_max reduction:        {bb['omega_reduction']*100:.2f}%")
+
+    if drag:
+        print(f"\n  Aerodynamic drag at peak ω:")
+        print(f"    Re_R = ω R²/ν:            {bb['Re_R_peak']:.3e}")
+        print(f"    C_M (turbulent skin):      {bb['C_M_peak']:.5f}")
+        print(f"    τ_skin (both sides):       {bb['tau_skin_peak']:.3f} N·m")
+        print(f"    τ_rim  (blunt edge):       {bb['tau_rim_peak']:.3f} N·m")
+        print(f"\n  Inertia-only reference (no drag):")
+        print(f"    α = τ/I = {bb['alpha_no_drag']:.3f} rad/s²")
+        print(f"    t_rot = {bb['t_rot_no_drag']*1000:.1f} ms")
+        print(f"    ω_max = {bb['omega_max_no_drag']:.4f} rad/s")
+        print(f"\n  With drag (numerical integration):")
+        print(f"    Switching angle:        θ_switch = {bb['theta_switch']:.5f} rad "
+              f"({np.degrees(bb['theta_switch']):.2f}°)")
+        print(f"    Accel time:             t_accel  = {bb['t_accel']*1000:.2f} ms")
+        print(f"    Decel time:             t_decel  = {bb['t_decel']*1000:.2f} ms")
+        print(f"    Total rotation time:    t_rot    = {t_rot*1000:.2f} ms")
+        print(f"    Peak ω:                 ω_max    = {omega_max:.5f} rad/s")
+        print(f"    Peak V_tip:             V_tip    = {V_tip:.4f} m/s")
+        print(f"    Final θ:                θ_final  = {bb['theta_final']:.5f} rad "
+              f"(target: {sweep_angle:.5f})")
+        print(f"\n  Drag impact:")
+        print(f"    Time increase:          {bb['drag_time_increase']*100:+.2f}%")
+        print(f"    ω_max reduction:        {bb['omega_reduction']*100:.2f}%")
+    else:
+        print(f"\n  Closed-form solution (I dω/dt = ±τ, no drag):")
+        print(f"    α = τ/I = {bb['alpha']:.3f} rad/s²")
+        print(f"    θ_switch = θ/2 = {bb['theta_switch']:.5f} rad "
+              f"({np.degrees(bb['theta_switch']):.2f}°)")
+        print(f"    t_accel = t_decel = {bb['t_accel']*1000:.2f} ms")
+        print(f"    Total rotation time:    t_rot    = {t_rot*1000:.2f} ms")
+        print(f"    Peak ω (at θ_switch):   ω_max    = {omega_max:.5f} rad/s")
+        print(f"    Peak V_tip:             V_tip    = {V_tip:.4f} m/s")
+        print(f"\n  NOTE: Use --drag flag for numerical solution with aerodynamic drag.")
 
     # ── Flow regime ──
     Ma_tip = V_tip / c_s
@@ -801,15 +1017,20 @@ if __name__ == "__main__":
     print(f"\n{DIVIDER}")
     print("7. MECHANISM 2: TANGENTIAL BL DIFFUSION")
     print(DIVIDER)
-    print(f"  Solving 1D diffusion equation with decaying ν_t ...")
+    if numeric:
+        print(f"  Solving 1D diffusion PDE numerically (--numeric flag set)...")
+    else:
+        print(f"  Using analytical estimate (use --numeric for full PDE solver)...")
 
     delta_star = delta / 8.0
     m2 = mechanism_tangential_diffusion(
-        V_tip, delta, delta_star, bl["u_tau"], nu, z_obs, t_obs
+        V_tip, delta, delta_star, bl["u_tau"], nu, z_obs, t_obs, numeric=numeric
     )
 
+    print(f"\n  Method: {m2.get('method', 'unknown').upper()}")
     print(f"\n  Turbulent viscosity:")
-    print(f"    ν_t (inner peak):  {m2['nu_t_inner_peak']:.3e} m²/s")
+    if 'nu_t_inner_peak' in m2:
+        print(f"    ν_t (inner peak):  {m2['nu_t_inner_peak']:.3e} m²/s")
     print(f"    ν_t (outer):       {m2['nu_t_outer']:.3e} m²/s")
     print(f"    ν_t / ν:           {m2['nu_t_over_nu']:.0f}×")
     print(f"\n  Eddy scales:")

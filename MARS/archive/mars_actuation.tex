@@ -1,0 +1,394 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{MARS Actuation System:\\
+       Dual-Concentric Magnetic Drive with Differential Belt}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Design Requirements}
+\label{sec:requirements}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The MARS propeller arm (Geometry~A) executes two sequential motions per
+event:
+\begin{enumerate}[nosep]
+  \item \textbf{Phase~1 --- Azimuthal rotation ($\theta$):}
+        The arm sweeps through $\theta_\mathrm{max} = \pi/N$ in a
+        bang-bang profile. Required torque: $\tau = \SI{60}{N\cdot m}$.
+        Peak tip velocity: $V_\mathrm{tip} \approx \SI{6}{m/s}$
+        ($N = 8$). Duration: $t_\mathrm{rot} \approx \SI{400}{ms}$.
+  \item \textbf{Phase~2 --- Radial translation ($r$):}
+        The carrier plate slides along the arm from its parked position
+        to the target radius. Required force: $F = \SI{20}{N}$.
+        Travel: $\Delta r \le \SI{0.8}{m}$. Peak velocity:
+        $V_\mathrm{max} \approx \SI{8}{m/s}$.
+        Duration: $t_\mathrm{slide} \approx \SI{200}{ms}$.
+\end{enumerate}
+
+The actuation mechanism must satisfy three constraints:
+\begin{itemize}[nosep]
+  \item All motors, bearings, and lubricated components must reside
+        \emph{outside} the xenon pressure boundary to preserve
+        radiopurity of the active volume.
+  \item No rotating or sliding seals may penetrate the pressure
+        boundary (leak risk at \SI{15}{bar}).
+  \item The two motions must be independently controllable and
+        \emph{sequentially decoupled}: the carrier must not move during
+        arm rotation, and vice versa.
+\end{itemize}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Architecture Overview}
+\label{sec:architecture}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The design uses a \textbf{dual-concentric magnetic coupling} through a
+static titanium re-entrant well, combined with a
+\textbf{differential co-rotation} scheme that decouples the two degrees
+of freedom without any clutch or brake.
+
+The key components, from bottom to top:
+\begin{enumerate}[nosep]
+  \item A titanium re-entrant well protruding below the vessel bottom
+        flange.
+  \item Two concentric magnetic couplings (outer and inner) that
+        transmit torque through the static Ti wall.
+  \item Two concentric shafts rising through the copper floor shield
+        into the xenon volume.
+  \item A bevel-gear redirector at the arm hub that converts inner-shaft
+        rotation into belt motion along the arm.
+  \item A timing belt running the length of the arm, carrying the
+        carrier plate.
+\end{enumerate}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Re-Entrant Well and Magnetic Drive}
+\label{sec:well}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Re-Entrant Well}
+
+A cylindrical titanium (Ti-6Al-4V) well is welded to the vessel bottom
+flange and protrudes \SI{200}{mm} downward into the atmosphere. The well
+is a static part of the pressure boundary --- it has no moving parts, no
+seals, and no feedthroughs. Its sole function is to bring the magnetic
+coupling close enough for effective torque transmission.
+
+\begin{table}[H]
+\centering
+\caption{Re-entrant well parameters.}
+\label{tab:well}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Note \\
+\midrule
+Material             & Ti-6Al-4V & Non-ferromagnetic, low radioactivity \\
+Outer diameter       & \SI{120}{mm} & Houses the \SI{100}{mm} outer coupling \\
+Wall thickness       & \SI{4}{mm} & Pressure boundary \\
+Length               & \SI{200}{mm} & Below bottom flange \\
+Net internal pressure & \SI{14}{bar} & Xe at 15~bar minus atmosphere \\
+Hoop stress          & \SI{21}{MPa} & $\sigma_h = P\,r/t$ \\
+Safety factor        & 42 & vs.\ Ti-6Al-4V yield (\SI{880}{MPa}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Titanium is chosen because it is non-ferromagnetic (the magnetic flux
+from the NdFeB magnets passes through the wall with minimal attenuation),
+structurally strong, and has low intrinsic radioactivity.
+
+\subsection{Magnetic Couplings}
+
+Two independent synchronous magnetic couplings transmit torque through
+the Ti wall without mechanical contact:
+
+\paragraph{Outer coupling ($\theta$ drive).}
+A ring of NdFeB permanent magnets on the external stator (air side)
+locks magnetically to a corresponding ring on the internal rotor
+(xenon side). The coupling must transmit up to $\tau = \SI{60}{N\cdot m}$
+for the arm rotation. At a coupling diameter of \SI{100}{mm} and a total
+radial air gap of $\sim\SI{6}{mm}$ (Ti wall + mechanical clearances),
+this is within the rated capacity of commercial rare-earth magnetic
+couplings.
+
+\paragraph{Inner coupling ($r$ drive).}
+A smaller set of NdFeB magnets, nested concentrically inside the outer
+coupling, transmits torque for the radial belt drive. The required
+torque is only $\tau_\mathrm{inner} = \SI{0.5}{N\cdot m}$
+(Section~\ref{sec:belt}), which is trivial for any NdFeB coupling
+at \SI{40}{mm} diameter.
+
+Each coupling is driven by its own servo motor mounted on the air side
+of the well.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Dual-Shaft Arrangement}
+\label{sec:shafts}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The two magnetic rotors drive two concentric shafts that rise vertically
+through a bore in the copper floor shield:
+
+\paragraph{Outer shaft ($\theta$).}
+A hollow Ti tube ($\varnothing\,\SI{40}{mm}$ OD, \SI{3}{mm} wall)
+connected to the outer magnetic rotor. It terminates above the floor
+shield in a central \textbf{yoke} to which the NACA\,0012 arms are
+bolted. Rotation of this shaft directly sets the azimuthal coordinate
+$\theta$.
+
+\paragraph{Inner shaft ($r$).}
+A solid Ti rod ($\varnothing\,\SI{15}{mm}$) running concentrically
+inside the outer shaft on PEEK sleeve bearings. It is connected to the
+inner magnetic rotor and extends above the yoke, where it carries a
+bevel gear (Section~\ref{sec:belt}).
+
+\begin{table}[H]
+\centering
+\caption{Shaft parameters.}
+\label{tab:shafts}
+\begin{tabular}{lcc}
+\toprule
+& Outer shaft & Inner shaft \\
+\midrule
+Function           & Arm rotation ($\theta$) & Carrier translation ($r$) \\
+Material           & Ti-6Al-4V & Ti-6Al-4V \\
+Outer diameter     & \SI{40}{mm} & \SI{15}{mm} \\
+Wall thickness     & \SI{3}{mm} (hollow) & solid \\
+Max torque         & \SI{60}{N\cdot m} & \SI{0.5}{N\cdot m} \\
+Shear stress       & \SI{10}{MPa} & $<\SI{1}{MPa}$ \\
+Safety factor      & $>50$ & $>500$ \\
+Bearings           & --- & PEEK sleeves \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The copper floor shield bore is $\varnothing\,\SI{120}{mm}$ to
+accommodate the outer coupling housing. PEEK is used for the
+inter-shaft bearings because of its low outgassing, radiation
+tolerance, and good tribological properties in inert-gas environments.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Differential Co-Rotation Principle}
+\label{sec:differential}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The two degrees of freedom ($\theta$ and $r$) are decoupled by
+exploiting the \emph{differential} angular velocity between the two
+shafts. Define:
+\begin{equation}
+  \Delta\omega \;\equiv\; \omega_\mathrm{inner} - \omega_\mathrm{outer}\,.
+  \label{eq:domega}
+\end{equation}
+
+The belt drive along the arm (Section~\ref{sec:belt}) is actuated by
+$\Delta\omega$: only the \emph{relative} rotation between inner and
+outer shafts moves the carrier. This yields a clean separation of the
+two phases:
+
+\paragraph{Phase~1 (arm rotation).}
+Both servo motors drive their magnetic couplings \emph{synchronously}
+at the same angular velocity profile:
+\begin{equation}
+  \omega_\mathrm{inner}(t) = \omega_\mathrm{outer}(t)
+  \quad\Longrightarrow\quad
+  \Delta\omega = 0\,.
+\end{equation}
+The bevel gear sees no input rotation, the belt is stationary relative
+to the arm, and the carrier does not move. The entire assembly ---
+both shafts, yoke, arms, belt, and carrier --- rotates as a rigid body.
+
+\paragraph{Phase~2 (carrier translation).}
+The outer motor holds the outer shaft at a fixed angle (arm stationary):
+\begin{equation}
+  \omega_\mathrm{outer} = 0\,,\quad
+  \omega_\mathrm{inner} \ne 0
+  \quad\Longrightarrow\quad
+  \Delta\omega = \omega_\mathrm{inner}\,.
+\end{equation}
+Now the inner shaft rotates inside the stationary outer shaft. The
+bevel gear converts this differential rotation into belt motion, and the
+carrier translates radially along the arm.
+
+This scheme requires no clutch, brake, or switchable mechanism inside
+the xenon volume. The decoupling is purely kinematic, enforced by the
+motor controllers.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Rotary-to-Linear Conversion: Bevel Gear and Timing Belt}
+\label{sec:belt}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Bevel Gear Redirector}
+
+The inner shaft extends above the yoke and terminates in a straight
+bevel gear that redirects the rotation axis by $90^\circ$: from vertical
+(shaft axis) to horizontal (along the arm). A mating bevel gear on a
+short horizontal stub shaft drives the timing-belt pulley at the arm
+root. A 1:1 gear ratio is used for simplicity.
+
+\subsection{Timing Belt Along the Arm}
+
+A toothed timing belt (e.g.\ GT3 profile, \SI{15}{mm} wide) runs the
+length of each arm:
+\begin{itemize}[nosep]
+  \item \textbf{Drive pulley} ($r_p = \SI{25}{mm}$): at the arm root,
+        driven by the bevel gear.
+  \item \textbf{Idler pulley}: at or near the arm tip.
+  \item \textbf{Belt path}: the belt forms a closed loop along two
+        parallel channels inside the arm structure. Total belt length
+        $\approx 2R + \pi(2 r_p) \approx \SI{3.4}{m}$.
+  \item \textbf{Carrier attachment}: the carrier plate is clamped to
+        one run of the belt. When the belt moves, the carrier translates
+        radially.
+\end{itemize}
+
+\subsection{Kinematics}
+
+The carrier linear velocity is set by the belt speed:
+\begin{equation}
+  V_\mathrm{carrier} = \Delta\omega\; r_p\,.
+  \label{eq:Vcarrier}
+\end{equation}
+
+At peak carrier velocity $V_\mathrm{max} = \SI{8}{m/s}$:
+\begin{align}
+  \Delta\omega_\mathrm{max}
+    &= \frac{V_\mathrm{max}}{r_p}
+     = \frac{8.0}{0.025}
+     = \SI{320}{rad/s}
+     \approx \SI{3060}{rpm}\,.
+  \label{eq:omega_inner}
+\end{align}
+This is well within the speed range of standard servo motors
+(typical: 3000--6000~rpm rated).
+
+\subsection{Force and Torque}
+
+The carrier force is transmitted through the belt:
+\begin{equation}
+  F_\mathrm{carrier} = \frac{\tau_\mathrm{inner}}{r_p}\,,
+  \label{eq:Fcarrier}
+\end{equation}
+so the required inner-shaft torque is:
+\begin{equation}
+  \tau_\mathrm{inner}
+    = F_\mathrm{carrier} \times r_p
+    = \SI{20}{N} \times \SI{0.025}{m}
+    = \SI{0.5}{N\cdot m}\,.
+  \label{eq:tau_inner}
+\end{equation}
+
+The belt tensions are modest:
+\begin{equation}
+  T_\mathrm{tight} - T_\mathrm{slack} = F_\mathrm{carrier}
+    = \SI{20}{N}\,,
+\end{equation}
+with typical tight-side tension $T_\mathrm{tight} \approx \SI{24}{N}$
+--- negligible for any standard timing belt.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Summary of Parameters}
+\label{sec:summary}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{table}[H]
+\centering
+\caption{Actuation system --- key parameters.}
+\label{tab:summary}
+\begin{tabular}{llcc}
+\toprule
+& & Phase~1 ($\theta$) & Phase~2 ($r$) \\
+\midrule
+\multicolumn{4}{l}{\textit{Motor requirements}} \\
+Driving shaft           & & Outer & Inner \\
+Coupling torque         & & \SI{60}{N\cdot m} & \SI{0.5}{N\cdot m} \\
+Coupling diameter       & & \SI{100}{mm} & \SI{40}{mm} \\
+Peak shaft speed        & & $\sim$\SI{16}{rad/s} & \SI{320}{rad/s} \\
+                        & & ($\sim$\SI{150}{rpm}) & ($\sim$\SI{3060}{rpm}) \\
+\midrule
+\multicolumn{4}{l}{\textit{Differential condition}} \\
+$\omega_\mathrm{outer}$ & & $\omega(t)$ & 0 \\
+$\omega_\mathrm{inner}$ & & $\omega(t)$ & $\Delta\omega(t)$ \\
+$\Delta\omega$          & & 0 (belt locked) & $\ne 0$ (belt moves) \\
+\midrule
+\multicolumn{4}{l}{\textit{Belt drive (Phase~2 only)}} \\
+Drive pulley radius     & $r_p$ & --- & \SI{25}{mm} \\
+Bevel gear ratio        & & --- & 1:1 \\
+Peak belt speed         & & --- & \SI{8}{m/s} \\
+Belt tension (tight)    & & --- & \SI{24}{N} \\
+Carrier force           & & --- & \SI{20}{N} \\
+Carrier travel          & & --- & $\le\SI{0.8}{m}$ \\
+Slide time              & & --- & $\sim$\SI{200}{ms} \\
+\midrule
+\multicolumn{4}{l}{\textit{Structural margins}} \\
+Ti well hoop stress / yield & & \multicolumn{2}{c}{\SI{21}{MPa}\,/\,\SI{880}{MPa} (SF\,$=$\,42)} \\
+Outer shaft shear / yield   & & \multicolumn{2}{c}{\SI{10}{MPa}\,/\,\SI{550}{MPa} (SF\,$>$\,50)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Discussion}
+\label{sec:discussion}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\paragraph{Why outer = $\theta$, inner = $r$.}
+The arm rotation requires the high torque (\SI{60}{N\cdot m}), while
+the belt drive requires only \SI{0.5}{N\cdot m}. The outer magnetic
+coupling has the larger diameter and hence higher torque capacity per
+unit length, making it the natural choice for the high-torque channel.
+The inner coupling, though smaller, easily handles the belt-drive torque.
+Swapping the roles would require the outer shaft to extend above the arm
+attachment point with an additional bearing stage, adding mechanical
+complexity for no benefit.
+
+\paragraph{Servo control.}
+The co-rotation requirement during Phase~1 demands that both motors
+track the same angular profile to within a small tolerance. If the
+inner motor lags or leads by $\Delta\theta_\mathrm{err}$, the carrier
+shifts by $\Delta r = r_p\,\Delta\theta_\mathrm{err}$. For a
+\SI{25}{mm} pulley, a $1^\circ$ tracking error produces
+$\Delta r \approx \SI{0.4}{mm}$ --- acceptable, and well within
+the capability of modern servo drives with encoder feedback.
+
+\paragraph{Radiopurity.}
+All motors, magnets, bearings, and lubricants are outside the pressure
+boundary or confined to the well interior (PEEK bearings in the shaft
+annulus). No organic lubricants or outgassing materials are present
+in the active xenon volume above the copper floor shield. The NdFeB
+magnets inside the well (xenon side) can be encapsulated in
+electroless-nickel or Ti cladding to prevent direct contact with xenon.
+
+\paragraph{Belt in the arm structure.}
+The timing belt runs inside channels in the arm (which has an
+aerodynamic NACA\,0012 external profile but can be hollow or
+truss-structured internally). The belt adds negligible mass
+($\sim$\SI{50}{g} for a \SI{3.4}{m} GT3 belt) and does not affect
+the external flow geometry.
+
+\end{document}

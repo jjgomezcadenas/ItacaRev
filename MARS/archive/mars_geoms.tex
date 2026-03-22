@@ -85,16 +85,16 @@ after stopping.
 Each blade extends from a central hub to the tip:
 \begin{itemize}
   \item Span (hub to tip): $R = \SI{1.6}{m}$.
-  \item Chord: $c$ (variable parameter; default \SI{0.22}{m}).
+  \item Chord: $c$ (variable parameter; default \SI{0.16}{m}).
   \item Profile: NACA\,0012 (symmetric, maximum thickness
         $t_\mathrm{max} = 0.12\,c$).
   \item Angle of attack: $\alpha = 0^\circ$.
 \end{itemize}
 
 The blade upper surface is at height $z_\mathrm{blade} = t_\mathrm{max}/2
-= 0.06\,c$ above the rotation plane. For $c = \SI{0.22}{m}$, the
-maximum thickness is $t_\mathrm{max} = \SI{26.4}{mm}$ and
-$z_\mathrm{blade} = \SI{13.2}{mm}$.
+= 0.06\,c$ above the rotation plane. For $c = \SI{0.16}{m}$, the
+maximum thickness is $t_\mathrm{max} = \SI{19.2}{mm}$ and
+$z_\mathrm{blade} = \SI{9.6}{mm}$.
 
 \subsection{Propeller Layout ($N$ Blades)}
 
@@ -119,12 +119,12 @@ For $N = 8$: $\theta_\mathrm{max} = \SI{22.5}{\degree}
 
 Table~\ref{tab:propA} collects the key dimensions for Geometry~A.
 All quantities that depend on $c$ are given for the default
-$c = \SI{0.22}{m}$ and $N = 8$.
+$c = \SI{0.16}{m}$ and $N = 8$.
 
 \begin{table}[H]
 \centering
 \caption{Geometry A (propeller) — key dimensions ($N = 8$,
-$c = \SI{0.22}{m}$).}
+$c = \SI{0.16}{m}$).}
 \label{tab:propA}
 \begin{tabular}{lll}
 \toprule
@@ -132,19 +132,19 @@ Quantity & Expression & Value \\
 \midrule
 Number of blades       & $N$                           & 8 \\
 Blade span             & $R$                           & \SI{1.6}{m} \\
-Blade chord            & $c$                           & \SI{0.22}{m} \\
-Max blade thickness    & $0.12\,c$                     & \SI{26.4}{mm} \\
+Blade chord            & $c$                           & \SI{0.16}{m} \\
+Max blade thickness    & $0.12\,c$                     & \SI{19.2}{mm} \\
 Total propeller diameter & $2R$                        & \SI{3.2}{m} \\
 Vessel inner diameter  & $2R + \Delta D$               & \SI{3.21}{m} \\
 Radial tip clearance   & $\Delta r = \Delta D/2$       & \SI{5}{mm} \\
 Vessel height          & $H$                           & \SI{1.5}{m} \\
 Max sweep angle        & $\pi / N$                     & \SI{22.5}{\degree} \\
-Blade planform area (one) & $R \times c$               & \SI{0.352}{m^2} \\
-Total blade area ($N$ blades) & $N R c$                & \SI{2.816}{m^2} \\
+Blade planform area (one) & $R \times c$               & \SI{0.256}{m^2} \\
+Total blade area ($N$ blades) & $N R c$                & \SI{2.048}{m^2} \\
 Swept area per blade   & $\tfrac{1}{2}R^2\,\theta_\mathrm{max}$
                                                         & \SI{0.503}{m^2} \\
 Blockage (thickness/tip gap) & $t_\mathrm{max}/\Delta r$
-                                                        & 5.28 \\
+                                                        & 3.84 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -349,7 +349,7 @@ two geometries.
 \centering
 \caption{Side-by-side comparison of Geometry A (propeller) and
 Geometry B (rotating disk). Default parameters: $N = 8$,
-$c = \SI{0.22}{m}$, $h_\mathrm{disk} = \SI{5}{mm}$.}
+$c = \SI{0.16}{m}$, $h_\mathrm{disk} = \SI{5}{mm}$.}
 \label{tab:comparison}
 \begin{tabular}{lll}
 \toprule
@@ -362,7 +362,7 @@ Radius
   & \SI{1.6}{m}
   & \SI{1.6}{m} \\
 Thickness
-  & \SI{26.4}{mm} (blade)
+  & \SI{19.2}{mm} (blade)
   & \SI{5}{mm} (disk) \\
 Cross-section
   & NACA\,0012 airfoil
@@ -371,7 +371,7 @@ Angle of attack
   & $0^\circ$
   & N/A (flat disk) \\
 Upper surface area
-  & $N R c = \SI{2.82}{m^2}$
+  & $N R c = \SI{2.05}{m^2}$
   & $\pi R^2 = \SI{8.04}{m^2}$ \\
 Gas contact
   & Isolated blades with gaps
@@ -392,7 +392,7 @@ Edge geometry
   & Streamlined (NACA\,0012 TE)
   & Blunt (disk rim, \SI{5}{mm} step) \\
 Blockage at rim
-  & $t_\mathrm{max}/\Delta r = 5.3$
+  & $t_\mathrm{max}/\Delta r = 3.8$
   & $h_\mathrm{disk}/\Delta r = 1.0$ \\
 Post-stop carrier motion
   & None (blades are the sensors)
@@ -423,8 +423,8 @@ $r \approx R$, while the bulk of the disk surface is smooth and flat.
 
 \paragraph{Thickness and blockage.}
 The NACA\,0012 blade is much thicker than the disk
-(\SI{26.4}{mm} vs.\ \SI{5}{mm} for default parameters). In the
-\SI{5}{mm} radial gap, the blade blockage ratio is 5.3 (the blade is
+(\SI{19.2}{mm} vs.\ \SI{5}{mm} for default parameters). In the
+\SI{5}{mm} radial gap, the blade blockage ratio is 3.8 (the blade is
 thicker than the gap), while the disk blockage ratio is 1.0 (disk edge
 just fills the gap). The propeller chord $c$ is a free parameter and
 can be reduced to lower the blockage, at the cost of reduced detector
@@ -465,7 +465,7 @@ parameters:
 Symbol & Description & Default & Geometry \\
 \midrule
 $N$  & Number of blades / ion plates & 8 & Both \\
-$c$  & Blade chord & \SI{0.22}{m} & A only \\
+$c$  & Blade chord & \SI{0.16}{m} & A only \\
 $h_\mathrm{disk}$ & Disk thickness & \SI{5}{mm} & B only \\
 $T_\mathrm{sweep}$ & Sweep duration & \SI{1.0}{s} & Both \\
 $z_\mathrm{obs}$ & Observation height above surface & \SI{10}{mm} & Both \\

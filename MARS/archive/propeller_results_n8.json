@@ -16,7 +16,7 @@
     "P_Pa": 1500000.0,
     "P_bar": 15.0,
     "T_K": 300.0,
-    "Delta_D_m": 0.1
+    "Delta_D_m": 0.01
   },
   "carrier_parameters": {
     "F_actuator_N": 20.0,
@@ -26,6 +26,16 @@
     "carrier_width_m": 0.16,
     "carrier_height_m": 0.005,
     "carrier_frontal_area_m2": 0.0008
+  },
+  "phase3_parameters": {
+    "z_lift_m": 0.005,
+    "z_lift_mm": 5.0,
+    "t_lift_s": 1.0,
+    "t_wait_s": 0.5,
+    "u_c_m_s": 0.0001,
+    "u_c_mm_s": 0.1,
+    "z_max_m": 0.02,
+    "z_max_mm": 20.0
   },
   "gas_properties": {
     "rho_kg_m3": 78.95718065912918,
@@ -69,8 +79,8 @@
     "z_blade_top_mm": 9.6,
     "z_BL_top_mm": 12.513986574026058,
     "gap_mm": 2.0860134259739413,
-    "R_cyl_m": 1.6500000000000001,
-    "tip_gap_mm": 50.00000000000004
+    "R_cyl_m": 1.605,
+    "tip_gap_mm": 4.999999999999893
   },
   "phase1_eddy_diffusion": {
     "method": "numerical",
@@ -149,7 +159,7 @@
   },
   "phase1_potential_flow": {
     "t_max_mm": 19.2,
-    "blockage_ratio": 0.38399999999999995,
+    "blockage_ratio": 3.8399999999999994,
     "w_disp_during_sweep_m_s": 4.9993123778673745,
     "t_acoustic_ms": 8.991782526003856
   },
@@ -160,10 +170,10 @@
     "t_arrive_us": 28.09932039376205
   },
   "phase1_secondary_flows": {
-    "tip_gap_mm": 50.0,
+    "tip_gap_mm": 5.0,
     "a_cent_m_s2": 6.311235241586637,
-    "t_cent_s": 0.1258759658510173,
-    "dp_cent_Pa": 24.915867057610942
+    "t_cent_s": 0.03980547547627898,
+    "dp_cent_Pa": 2.491586705761094
   },
   "phase1_vortex_shedding": {
     "Re_d": 415290.5486422936,
@@ -211,19 +221,76 @@
     "u_at_obs_cm_s": 0.0,
     "reaches_z_obs": false
   },
+  "phase3_kinematics": {
+    "z_lift_m": 0.005,
+    "z_lift_mm": 5.0,
+    "t_lift_s": 1.0,
+    "t_lift_ms": 1000.0,
+    "a_lift_m_s2": 0.02,
+    "V_lift_max_m_s": 0.01,
+    "V_lift_max_mm_s": 10.0,
+    "t_wait_s": 0.5
+  },
+  "phase3_profile1": {
+    "description": "Blade BL diffusion evaluated at t_slide + t_lift + t_wait after rotation",
+    "t_eval_s": 1.7,
+    "delta_1_m": 0.002913986574026059,
+    "delta_1_mm": 2.9139865740260587,
+    "z_q1_m": 0.002899999999999999,
+    "z_q1_mm": 2.899999999999999,
+    "max_reach_m": 0.0044949436444168414,
+    "max_reach_mm": 4.494943644416842,
+    "t_decay_s": 0.01834004372412135,
+    "t_decay_ms": 18.34004372412135,
+    "nu_t_outer_m2_s": 4.166939890220922e-05
+  },
+  "phase3_profile2": {
+    "description": "Carrier slide BL diffusion evaluated at t_lift + t_wait after slide stops",
+    "t_eval_s": 1.5,
+    "delta_2_m": 0.0027829088587755604,
+    "delta_2_mm": 2.7829088587755604,
+    "z_q2_m": 0.002799999999999999,
+    "z_q2_mm": 2.799999999999999,
+    "max_reach_m": 0.004281667967922512,
+    "max_reach_mm": 4.2816679679225125,
+    "t_decay_s": 0.013914544293877801,
+    "t_decay_ms": 13.914544293877801,
+    "nu_t_outer_m2_s": 5.009235945796008e-05
+  },
+  "phase3_profile3": {
+    "description": "Stokes layer from lift evaluated at t_wait after lift stops",
+    "t_eval_s": 0.5,
+    "delta_3_m": 0.0005420610177856532,
+    "delta_3_mm": 0.5420610177856532,
+    "z_q3_m": 0.007500000000000007,
+    "z_q3_mm": 7.500000000000007,
+    "z_lift_m": 0.005,
+    "z_lift_mm": 5.0,
+    "delta_eff_m": 0.0006638864515142837,
+    "delta_eff_mm": 0.6638864515142837
+  },
   "summary": {
     "t_rot_ms": 395.45100958107565,
     "t_slide_ms": 200.0,
-    "t_total_ms": 595.4510095810757,
+    "t_lift_ms": 1000.0,
+    "t_wait_ms": 500.0,
+    "t_total_ms": 2095.4510095810756,
+    "t_total_s": 2.0954510095810757,
     "V_tip_max_m_s": 6.355462653981571,
     "V_slide_max_m_s": 8.0,
+    "V_lift_max_mm_s": 10.0,
     "phase1_delta_mm": 2.9139865740260587,
     "phase2_delta_mm": 2.7829088587755604,
+    "phase3_delta_stokes_mm": 0.5420610177856532,
     "phase1_max_reach_mm": 4.171477567726994,
     "phase2_max_reach_mm": 4.001076537901345,
     "z_obs_mm": 5.0,
     "phase1_u_at_obs_m_s": 3.3406590932754734e-05,
     "phase2_u_at_obs_m_s": 0.0,
-    "gas_quiescent_at_z_obs": false
+    "gas_quiescent_at_z_obs": false,
+    "phase3_z_q1_mm": 2.899999999999999,
+    "phase3_z_q2_mm": 2.799999999999999,
+    "phase3_z_q3_mm": 7.500000000000007,
+    "u_c_mm_s": 0.1
   }
 }

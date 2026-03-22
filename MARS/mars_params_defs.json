@@ -1,0 +1,26 @@
+{
+  "fixed": {
+    "P_bar": 15.0,
+    "T_K": 300.0,
+    "gamma_Xe": 1.667,
+    "R_cyl_m": 1.6,
+    "H_cyl_m": 1.5,
+    "L_drift_m": 1.5,
+    "v_drift_mm_s": 100.0,
+    "sigma_diff_mm": 1.0,
+    "u_c_mm_s": 0.1
+  },
+  "design": {
+    "n_arms": 2,
+    "R_blade_m": 1.6,
+    "chord_m": 0.16,
+    "m_blade_kg": 0.25,
+    "m_plate_kg": 0.25,
+    "tau_motor_Nm": 60.0,
+    "delta_r_m": 0.8,
+    "r0_carrier_m": 0.8,
+    "z_lift_mm": 5.0,
+    "t_lift_s": 0.5,
+    "F_actuator_N": 20.0
+  }
+}

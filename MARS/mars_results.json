@@ -1,0 +1,199 @@
+{
+  "input_params": {
+    "n_arms": 2,
+    "R_blade_m": 1.6,
+    "chord_m": 0.16,
+    "m_blade_kg": 0.25,
+    "m_plate_kg": 0.25,
+    "tau_motor_Nm": 60.0,
+    "delta_r_m": 0.8,
+    "r0_carrier_m": 0.8,
+    "z_lift_mm": 4.0,
+    "t_lift_s": 0.4,
+    "F_actuator_N": 20.0,
+    "u_c_mm_s": 0.1
+  },
+  "fixed_params": {
+    "P_bar": 15.0,
+    "T_K": 300.0,
+    "gamma_Xe": 1.6666666666666667,
+    "R_cyl_m": 1.6,
+    "H_cyl_m": 1.5,
+    "L_drift_m": 1.5,
+    "v_drift_mm_s": 100.0,
+    "sigma_diff_mm": 1.0
+  },
+  "gas_properties": {
+    "rho_kg_m3": 78.95718065912918,
+    "nu_m2_s": 2.938301470028182e-07,
+    "c_s_m_s": 177.94024659436187
+  },
+  "phase1": {
+    "sweep_angle_deg": 180.0,
+    "sweep_angle_rad": 3.141592653589793,
+    "I_blades_kg_m2": 0.42666666666666675,
+    "I_plates_kg_m2": 0.32000000000000006,
+    "I_total_kg_m2": 0.7466666666666668,
+    "t_rot_s": 0.39545100958107565,
+    "t_rot_ms": 395.45100958107565,
+    "omega_max_rad_s": 15.888656634953927,
+    "V_tip_m_s": 25.421850615926285,
+    "Ma_tip": 0.14286734509185395,
+    "Re_tip": 13843018.288076453,
+    "delta_m": 0.002208388862420088,
+    "delta_mm": 2.208388862420088,
+    "delta_star_m": 0.000276048607802511,
+    "theta_m": 0.00021470447273528632,
+    "Cf": 0.002208388862420088,
+    "u_tau_m_s": 0.8447533810056127,
+    "nu_t_m2_s": 0.00012631799646521745,
+    "u_prime_m_s": 1.2710925307963143,
+    "t_eddy_s": 0.001737394256448487,
+    "t_decay_s": 0.003474788512896974,
+    "t_decay_ms": 3.474788512896974,
+    "ell_turb_mm": 0.6625166587260264,
+    "ell_mol_mm": 0.03195305336815594,
+    "max_reach_m": 0.00290285857451427,
+    "max_reach_mm": 2.9028585745142697
+  },
+  "phase2": {
+    "delta_r_m": 0.8,
+    "t_slide_s": 0.2,
+    "t_slide_ms": 200.0,
+    "V_slide_m_s": 8.0,
+    "Ma_slide": 0.044958912630019277,
+    "Re_slide": 4356258.243262299,
+    "regime": "turbulent",
+    "delta_m": 0.0027829088587755604,
+    "delta_mm": 2.7829088587755604,
+    "delta_star_m": 0.00034786360734694505,
+    "nu_t_m2_s": 5.009235945796008e-05,
+    "t_decay_s": 0.013914544293877801,
+    "t_decay_ms": 13.914544293877801,
+    "ell_turb_mm": 0.834872657632668,
+    "ell_mol_mm": 0.06394147789461345,
+    "max_reach_m": 0.0036817229943028416,
+    "max_reach_mm": 3.6817229943028416
+  },
+  "phase3": {
+    "z_lift_mm": 4.0,
+    "z_lift_m": 0.004,
+    "t_lift_s": 0.4,
+    "t_lift_ms": 400.0,
+    "V_lift_m_s": 0.02,
+    "V_lift_mm_s": 20.0,
+    "Re_lift": 272.2661402038937,
+    "regime": "laminar",
+    "delta_Stokes_m": 0.00034282948939834114,
+    "delta_Stokes_mm": 0.3428294893983411
+  },
+  "mechanisms": {
+    "m1_boundary_layer": {
+      "delta_blade_mm": 2.208388862420088,
+      "delta_carrier_mm": 2.7829088587755604,
+      "max_reach_blade_mm": 2.9028585745142697,
+      "max_reach_carrier_mm": 3.6817229943028416,
+      "effect": "zero (horizontal, lift separates)"
+    },
+    "m2_bulk_swirl": {
+      "tau_drag_Nm": 62.70283251792349,
+      "delta_Ekman_mm": 0.19231784511616734,
+      "t_Ekman_decay_ms": 981780.7009145463,
+      "effect": "zero (horizontal tangential flow)"
+    },
+    "m3_potential_flow": {
+      "t_acoustic_ms": 8.991782526003856,
+      "effect": "zero (vanishes after motion stops)"
+    },
+    "m4_pressure_pulse": {
+      "dp_Pa": 51027.69573398721,
+      "dp_kPa": 51.02769573398721,
+      "t_traverse_ms": 8.991782526003856,
+      "effect": "zero (transient, ions arrive >1s later)"
+    },
+    "m5_secondary_flows": {
+      "a_cent_m_s2": 100.97976386538619,
+      "effect": "zero (horizontal, confined to BL)"
+    },
+    "m6_vortex_shedding": {
+      "St": 0.21,
+      "f_shed_Hz": 278.05149111169374,
+      "effect": "zero (suppressed for streamlined body at \u03b1=0)"
+    }
+  },
+  "summary": {
+    "t_total_s": 0.9954510095810757,
+    "t_total_ms": 995.4510095810757,
+    "max_reach_mm": 3.6817229943028416,
+    "z_lift_mm": 4.0,
+    "margin_mm": 0.31827700569715844,
+    "margin_ok": true,
+    "dead_zone_mm": 99.54510095810757,
+    "dead_zone_pct": 6.6363400638738375
+  },
+  "velocity_profiles": {
+    "z_mm": [
+      0.1,
+      0.2,
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      2.5,
+      3.0,
+      3.5,
+      4.0,
+      4.5,
+      5.0
+    ],
+    "delta_blade_mm": 2.208388862420088,
+    "delta_carrier_mm": 2.7829088587755604,
+    "delta_Stokes_mm": 0.3428294893983411,
+    "V_tip_m_s": 25.421850615926285,
+    "V_slide_m_s": 8.0,
+    "V_lift_m_s": 0.02,
+    "u_theta_m_s": [
+      16.337905125994485,
+      18.038509725008133,
+      20.56123645674978,
+      22.70144556006512,
+      24.055224079168813,
+      25.06442798810483,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "u_r_m_s": [
+      4.974311629697033,
+      5.492085308094187,
+      6.2601659661391515,
+      6.911783597071928,
+      7.323961056769448,
+      7.631227790309778,
+      7.8784122992298,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "u_z_m_s": [
+      0.014939998515581483,
+      0.011160177782278846,
+      0.004651925907523616,
+      0.0010820207324544707,
+      0.00025167401388913145,
+      5.853844327306545e-05,
+      1.3615825042403738e-05,
+      3.1669904633533366e-06,
+      7.366302492676805e-07,
+      1.713374670416951e-07,
+      3.985246009303677e-08,
+      9.269534579267438e-09
+    ],
+    "note": "u_\u03b8, u_r: 1/7 power law; u_z: Stokes exponential decay"
+  }
+}

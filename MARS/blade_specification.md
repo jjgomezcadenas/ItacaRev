@@ -57,11 +57,11 @@ I_blade = (1/3) × m_blade × R²
 ### Number of Arms
 | Config | n_arms | Sweep angle θ | I_total (blades) | I_total (+ plates) |
 |--------|--------|---------------|------------------|---------------------|
-| 2-arm | 2 | π (180°) | 0.427 kg·m² | 1.71 kg·m² |
-| 4-arm | 4 | π/2 (90°) | 0.853 kg·m² | 3.41 kg·m² |
-| 8-arm | 8 | π/4 (45°) | 1.71 kg·m² | 6.83 kg·m² |
+| 2-arm | 2 | π (180°) | 0.427 kg·m² | 0.747 kg·m² |
+| 4-arm | 4 | π/2 (90°) | 0.853 kg·m² | 1.493 kg·m² |
+| 8-arm | 8 | π/4 (45°) | 1.707 kg·m² | 2.987 kg·m² |
 
-**Note**: Sweep angle θ = 2π/n_arms ensures full coverage.
+**Note**: Sweep angle θ = 2π/n_arms ensures full coverage. Plate inertia uses I_plate = m_plate × r₀² with r₀ = R/2 = 0.8 m.
 
 ## Kinematics (Bang-Bang Profile)
 
@@ -75,21 +75,21 @@ Total rotation time:   t_rot = 2√(θ·I/τ)
 Peak tip velocity:     V_tip = ω_max × R
 ```
 
-### Results (τ = 60 N·m, with 250 g plates)
+### Results (τ = 60 N·m, with 250 g plates at r₀ = 0.8 m)
 
 | Config | t_rot (ms) | ω_max (rad/s) | V_tip (m/s) |
 |--------|------------|---------------|-------------|
-| 2-arm | 424 | 7.41 | 11.9 |
-| 8-arm | 169 | 0.93 | 1.49 |
+| 2-arm | 396 | 15.9 | 25.4 |
+| 8-arm | 396 | 4.0 | 6.4 |
 
 ## Aerodynamic Properties
 
 ### Flow Regime (at peak velocity)
 | Parameter | 2-arm | 8-arm |
 |-----------|-------|-------|
-| Tip Mach number | 0.076 | 0.010 |
-| Tip Reynolds number | 7.7×10⁵ | 9.6×10⁴ |
-| Flow regime | Turbulent | Transitional |
+| Tip Mach number | 0.143 | 0.036 |
+| Tip Reynolds number | 1.38×10⁷ | 3.46×10⁶ |
+| Flow regime | Fully turbulent | Fully turbulent |
 
 ### Drag Model
 For NACA 0012 at α = 0° in dense xenon:
@@ -106,22 +106,22 @@ where:
 **Impact**: Drag increases rotation time by ~5–10% and reduces ω_max by ~3–5%.
 
 ### Boundary Layer
-At peak velocity (2-arm case, V_tip ≈ 12 m/s):
+At peak velocity (2-arm case, V_tip ≈ 25.4 m/s):
 | Parameter | Value |
 |-----------|-------|
-| BL thickness δ | ~3 mm |
-| Displacement thickness δ* | ~0.4 mm |
-| Momentum thickness θ | ~0.3 mm |
-| Friction velocity u_τ | ~0.4 m/s |
-| Wall shear stress τ_w | ~13 Pa |
+| BL thickness δ | ~2.2 mm |
+| Displacement thickness δ* | ~0.28 mm |
+| Momentum thickness θ | ~0.21 mm |
+| Friction velocity u_τ | ~0.84 m/s |
+| Wall shear stress τ_w | ~56 Pa |
 
 ## Vessel Constraints
 
 | Parameter | Value |
 |-----------|-------|
-| Vessel inner diameter | 2R + 2×(10 cm) = 3.4 m |
+| Vessel inner diameter | 2R + ΔD = 3.21 m |
 | Vessel height | H = 1.5 m |
-| Clearance (radial) | 10 cm |
+| Clearance (radial) | 5 mm |
 | Gas | Xenon at P = 15 bar, T = 300 K |
 
 ## Flow Mechanisms After Stop
@@ -139,16 +139,16 @@ The blade rotation induces several flow mechanisms that persist after the blade 
 At z = 5 mm above blade surface, t = 500 ms after stop:
 | Config | u_residual |
 |--------|------------|
-| 2-arm | ~10⁻³ m/s |
-| 8-arm | ~10⁻⁴ m/s |
+| 2-arm | ~3×10⁻⁷ m/s |
+| 8-arm | ~3×10⁻⁵ m/s |
 
 ## Carrier Plate Interface
 
 Each blade carries one carrier plate:
-- Initial position: r₀ = R/√2 ≈ 1.13 m from center
+- Initial position: r₀ = R/2 = 0.8 m from center
 - Plate slides radially along blade after rotation completes
 - Interface: Linear rail or bearing
-- Mass contribution to inertia: I_plate = m_plate × R² (point mass at r₀)
+- Mass contribution to inertia: I_plate = m_plate × r₀² (point mass at r₀)
 
 ## Summary Table
 

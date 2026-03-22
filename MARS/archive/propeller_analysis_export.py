@@ -56,6 +56,12 @@ from propeller_flow_numerics import (
     mechanism_pressure_pulse,
     mechanism_secondary_flows,
     mechanism_vortex_shedding,
+    # Phase 3 functions
+    compute_lift_kinematics,
+    compute_stokes_layer_thickness,
+    compute_velocity_profile_blade,
+    compute_velocity_profile_slide,
+    compute_velocity_profile_lift,
 )
 
 
@@ -84,6 +90,13 @@ def run_analysis(n_arms: int, numeric: bool = True, drag: bool = False) -> dict:
     m_carrier = m_plate  # same carrier plate mass
     Cd_carrier = 0.1
     r0_carrier = 0.8  # m (R/2)
+
+    # Phase 3 parameters (vertical lift)
+    z_lift = 0.005  # m (5 mm lift height)
+    t_lift = 1.0  # s (lift duration)
+    t_wait = 0.5  # s (wait time after lift)
+    u_c = 0.0001  # m/s (quiescence cutoff = 0.1 mm/s)
+    z_max = 0.020  # m (maximum height to scan)
 
     # Derived
     sweep_angle = 2.0 * np.pi / n_arms
@@ -120,6 +133,16 @@ def run_analysis(n_arms: int, numeric: bool = True, drag: bool = False) -> dict:
             "carrier_width_m": CARRIER_WIDTH,
             "carrier_height_m": CARRIER_HEIGHT,
             "carrier_frontal_area_m2": CARRIER_FRONTAL_AREA,
+        },
+        "phase3_parameters": {
+            "z_lift_m": z_lift,
+            "z_lift_mm": z_lift * 1000,
+            "t_lift_s": t_lift,
+            "t_wait_s": t_wait,
+            "u_c_m_s": u_c,
+            "u_c_mm_s": u_c * 1000,
+            "z_max_m": z_max,
+            "z_max_mm": z_max * 1000,
         },
         "gas_properties": {
             "rho_kg_m3": rho,
@@ -341,24 +364,113 @@ def run_analysis(n_arms: int, numeric: bool = True, drag: bool = False) -> dict:
     }
 
     # ═══════════════════════════════════════════════════════════════
+    # PHASE 3: VERTICAL LIFT
+    # ═══════════════════════════════════════════════════════════════
+
+    # Lift kinematics
+    lift_kin = compute_lift_kinematics(z_lift, t_lift)
+    V_lift = lift_kin["V_max"]
+
+    results["phase3_kinematics"] = {
+        "z_lift_m": z_lift,
+        "z_lift_mm": z_lift * 1000,
+        "t_lift_s": t_lift,
+        "t_lift_ms": t_lift * 1000,
+        "a_lift_m_s2": lift_kin["a_lift"],
+        "V_lift_max_m_s": V_lift,
+        "V_lift_max_mm_s": V_lift * 1000,
+        "t_wait_s": t_wait,
+    }
+
+    # Profile 1: Blade BL diffusion
+    # Evaluation time: t_slide + t_lift + t_wait after rotation stops
+    t_eval_profile1 = t_slide + t_lift + t_wait
+    profile1 = compute_velocity_profile_blade(
+        V_tip, delta, delta_star, nu, t_eval_profile1, z_max, u_c
+    )
+
+    results["phase3_profile1"] = {
+        "description": "Blade BL diffusion evaluated at t_slide + t_lift + t_wait after rotation",
+        "t_eval_s": t_eval_profile1,
+        "delta_1_m": profile1["delta_1"],
+        "delta_1_mm": profile1["delta_1"] * 1000,
+        "z_q1_m": profile1["z_q1"],
+        "z_q1_mm": profile1["z_q1"] * 1000,
+        "max_reach_m": profile1["max_reach"],
+        "max_reach_mm": profile1["max_reach"] * 1000,
+        "t_decay_s": profile1["t_decay"],
+        "t_decay_ms": profile1["t_decay"] * 1000,
+        "nu_t_outer_m2_s": profile1["nu_t_outer"],
+    }
+
+    # Profile 2: Carrier slide BL diffusion
+    # Evaluation time: t_lift + t_wait after slide stops
+    t_eval_profile2 = t_lift + t_wait
+    profile2 = compute_velocity_profile_slide(
+        V_slide_max, delta_c, bl_carrier["delta_star"], nu, t_eval_profile2, z_max, u_c
+    )
+
+    results["phase3_profile2"] = {
+        "description": "Carrier slide BL diffusion evaluated at t_lift + t_wait after slide stops",
+        "t_eval_s": t_eval_profile2,
+        "delta_2_m": profile2["delta_2"],
+        "delta_2_mm": profile2["delta_2"] * 1000,
+        "z_q2_m": profile2["z_q2"],
+        "z_q2_mm": profile2["z_q2"] * 1000,
+        "max_reach_m": profile2["max_reach"],
+        "max_reach_mm": profile2["max_reach"] * 1000,
+        "t_decay_s": profile2["t_decay"],
+        "t_decay_ms": profile2["t_decay"] * 1000,
+        "nu_t_outer_m2_s": profile2["nu_t_outer"],
+    }
+
+    # Profile 3: Stokes layer from lift
+    delta_stokes = compute_stokes_layer_thickness(nu, t_lift)
+    profile3 = compute_velocity_profile_lift(
+        V_lift, delta_stokes, nu, t_wait, z_lift, z_max, u_c
+    )
+
+    results["phase3_profile3"] = {
+        "description": "Stokes layer from lift evaluated at t_wait after lift stops",
+        "t_eval_s": t_wait,
+        "delta_3_m": profile3["delta_3"],
+        "delta_3_mm": profile3["delta_3"] * 1000,
+        "z_q3_m": profile3["z_q3"],
+        "z_q3_mm": profile3["z_q3"] * 1000,
+        "z_lift_m": profile3["z_lift"],
+        "z_lift_mm": profile3["z_lift"] * 1000,
+        "delta_eff_m": profile3["delta_eff"],
+        "delta_eff_mm": profile3["delta_eff"] * 1000,
+    }
+
+    # ═══════════════════════════════════════════════════════════════
     # COMBINED SUMMARY
     # ═══════════════════════════════════════════════════════════════
 
-    t_total = t_rot + t_slide
+    t_total = t_rot + t_slide + t_lift + t_wait
     results["summary"] = {
         "t_rot_ms": t_rot * 1000,
         "t_slide_ms": t_slide * 1000,
+        "t_lift_ms": t_lift * 1000,
+        "t_wait_ms": t_wait * 1000,
         "t_total_ms": t_total * 1000,
+        "t_total_s": t_total,
         "V_tip_max_m_s": V_tip,
         "V_slide_max_m_s": V_slide_max,
+        "V_lift_max_mm_s": V_lift * 1000,
         "phase1_delta_mm": delta * 1000,
         "phase2_delta_mm": delta_c * 1000,
+        "phase3_delta_stokes_mm": delta_stokes * 1000,
         "phase1_max_reach_mm": m1["max_reach"] * 1000,
         "phase2_max_reach_mm": m1_c["max_reach"] * 1000,
         "z_obs_mm": z_obs * 1000,
         "phase1_u_at_obs_m_s": m1["u_at_obs"],
         "phase2_u_at_obs_m_s": m1_c["u_at_obs"],
         "gas_quiescent_at_z_obs": (m1["u_at_obs"] < 1e-6) and (m1_c["u_at_obs"] < 1e-6),
+        "phase3_z_q1_mm": profile1["z_q1"] * 1000,
+        "phase3_z_q2_mm": profile2["z_q2"] * 1000,
+        "phase3_z_q3_mm": profile3["z_q3"] * 1000,
+        "u_c_mm_s": u_c * 1000,
     }
 
     return results
@@ -383,8 +495,13 @@ def main():
               f"V_tip = {results['phase1_kinematics']['V_tip_max_m_s']:.2f} m/s")
         print(f"  Phase 2: t_slide = {results['phase2_kinematics']['t_slide_ms']:.1f} ms, "
               f"V_max = {results['phase2_kinematics']['V_max_m_s']:.2f} m/s")
+        print(f"  Phase 3: t_lift = {results['phase3_kinematics']['t_lift_s']:.1f} s, "
+              f"V_lift = {results['phase3_kinematics']['V_lift_max_mm_s']:.2f} mm/s")
         print(f"  u(z_obs) Phase 1: {results['phase1_eddy_diffusion']['u_at_obs_m_s']:.2e} m/s")
         print(f"  u(z_obs) Phase 2: {results['phase2_eddy_diffusion']['u_at_obs_m_s']:.2e} m/s")
+        print(f"  Phase 3: z_q1 = {results['phase3_profile1']['z_q1_mm']:.2f} mm, "
+              f"z_q2 = {results['phase3_profile2']['z_q2_mm']:.2f} mm")
+        print(f"  Total cycle time: {results['summary']['t_total_s']:.3f} s")
         print(f"  Gas quiescent: {results['summary']['gas_quiescent_at_z_obs']}")
         print()
 

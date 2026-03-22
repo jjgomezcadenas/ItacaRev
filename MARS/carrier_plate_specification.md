@@ -85,12 +85,12 @@ The motions are **sequential, not simultaneous**, to avoid:
 
 ### Loading Conditions
 
-**During blade rotation** (carrier at r₀ = 1.13 m):
+**During blade rotation** (carrier at r₀ = 0.8 m):
 | Parameter | Value |
 |-----------|-------|
-| Angular acceleration | α ≈ 70 rad/s² (8-arm case) |
-| Tangential acceleration | a_t = α × r₀ ≈ 79 m/s² |
-| Tangential force | F_t = m × a_t ≈ 20 N |
+| Angular acceleration | α ≈ 20.1 rad/s² (8-arm case) |
+| Tangential acceleration | a_t = α × r₀ ≈ 16 m/s² |
+| Tangential force | F_t = m × a_t ≈ 4.0 N |
 
 **During radial slide** (blade stationary):
 | Parameter | Value |
@@ -113,9 +113,9 @@ For 1 mm wall thickness:
 | Parameter | Value |
 |-----------|-------|
 | Frontal area | A = 5 mm × 160 mm = 8×10⁻⁴ m² |
-| Local velocity (at r₀, ω_max ≈ 0.5 rad/s) | V ≈ 0.57 m/s |
+| Local velocity (at r₀ = 0.8 m, ω_max ≈ 4.0 rad/s, 8-arm) | V ≈ 3.2 m/s |
 | Drag coefficient | C_d ≈ 0.1 (worst case) |
-| Drag force | F_d ≈ 1 mN |
+| Drag force | F_d ≈ 32 mN |
 
 ### During Radial Slide
 | Parameter | Value |

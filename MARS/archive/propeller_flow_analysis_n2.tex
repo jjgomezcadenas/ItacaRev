@@ -1,0 +1,572 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{graphicx}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{Residual Gas Velocity Above a Stopped 2-Arm Propeller\\
+       in Dense Xenon: A Mechanism-by-Mechanism Analysis}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Problem Definition}
+\label{sec:problem}
+% ══════════════════════════════════════════════════════════════════════════════
+
+A horizontal 2-arm propeller (NACA\,0012 airfoil cross-section) rotates
+inside a vertical cylindrical vessel filled with xenon gas at high pressure.
+The propeller sweeps through $\theta = \pi$ (180°) via a bang-bang motion
+profile. After rotation, the carrier plate slides radially and then lifts
+vertically. We seek the residual gas velocity above the lifted plate to
+determine when quiescence is achieved for ion detection.
+
+\subsection{Parameters}
+
+\begin{table}[H]
+\centering
+\caption{System parameters for the 2-arm propeller.}
+\label{tab:params}
+\begin{tabular}{llll}
+\toprule
+Symbol & Description & Value & Units \\
+\midrule
+$n$ & Number of blade arms & 2 & --- \\
+$R$ & Blade span (hub to tip) & 1.6 & m \\
+$c$ & Blade chord length & 0.16 & m \\
+$\theta$ & Sweep angle ($= \pi$) & 180 & ° \\
+$m_\mathrm{blade}$ & Mass of each blade & 0.25 & kg \\
+$m_\mathrm{plate}$ & Mass of each carrier plate & 0.25 & kg \\
+$\tau$ & Motor torque & 60 & N$\cdot$m \\
+\midrule
+\multicolumn{4}{l}{\textit{Carrier plate parameters}} \\
+$r_0$ & Initial radial position & 0.8 & m \\
+$F_\mathrm{act}$ & Linear actuator force & 20 & N \\
+$L_c$ & Carrier width & 0.16 & m \\
+\midrule
+\multicolumn{4}{l}{\textit{Phase 3 parameters}} \\
+$z_\mathrm{lift}$ & Lift height & 5 & mm \\
+$t_\mathrm{lift}$ & Lift duration & 1.0 & s \\
+$t_\mathrm{wait}$ & Wait time after lift & 0.5 & s \\
+$u_c$ & Quiescence cutoff velocity & 0.1 & mm/s \\
+\midrule
+\multicolumn{4}{l}{\textit{Gas conditions}} \\
+$P$ & Xenon pressure & 15 & bar \\
+$T$ & Gas temperature & 300 & K \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Xenon Gas Properties}
+\label{sec:gas}
+% ══════════════════════════════════════════════════════════════════════════════
+
+At \SI{15}{bar} and \SI{300}{K}:
+
+\begin{table}[H]
+\centering
+\caption{Xenon gas properties.}
+\label{tab:gas}
+\begin{tabular}{lll}
+\toprule
+Property & Value & Note \\
+\midrule
+Density $\rho$ & \SI{79.0}{kg/m^3} & 66$\times$ denser than air \\
+Dynamic viscosity $\mu$ & \SI{2.32e-5}{Pa\cdot s} & --- \\
+Kinematic viscosity $\nu$ & \SI{2.94e-7}{m^2/s} & 51$\times$ smaller than air \\
+Speed of sound $c_s$ & \SI{177.9}{m/s} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Three-Phase Motion Sequence}
+\label{sec:phases}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The complete motion consists of three sequential phases:
+
+\begin{enumerate}[nosep]
+  \item \textbf{Phase 1}: Blade rotation (bang-bang profile)
+  \item \textbf{Phase 2}: Carrier radial slide (bang-bang profile)
+  \item \textbf{Phase 3}: Vertical plate lift + wait period
+\end{enumerate}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Phase 1: Blade Rotation}
+\label{sec:phase1}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Kinematics}
+
+The propeller executes a bang-bang motion profile under constant torque $\tau$:
+\begin{align}
+  I &= n \times \frac{1}{3}m_\mathrm{blade}R^2 + n \times m_\mathrm{plate}r_0^2 \\
+  t_\mathrm{rot} &= 2\sqrt{\frac{\theta I}{\tau}} \\
+  \omega_\mathrm{max} &= \sqrt{\frac{\theta\tau}{I}} \\
+  V_\mathrm{tip} &= \omega_\mathrm{max} R
+\end{align}
+
+\begin{table}[H]
+\centering
+\caption{Phase 1 kinematics (2-arm propeller).}
+\label{tab:phase1_kin}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Moment of inertia $I$ & 0.747 & kg$\cdot$m$^2$ \\
+Angular acceleration $\alpha = \tau/I$ & 80.3 & rad/s$^2$ \\
+Rotation time $t_\mathrm{rot}$ & 396 & ms \\
+Peak angular velocity $\omega_\mathrm{max}$ & 15.9 & rad/s \\
+Peak tip velocity $V_\mathrm{tip}$ & 25.4 & m/s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Flow Regime}
+
+\begin{table}[H]
+\centering
+\caption{Flow regime at peak velocity.}
+\label{tab:regime}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Interpretation \\
+\midrule
+Tip Mach number Ma & 0.143 & Incompressible ($< 0.3$) \\
+Chord Reynolds number Re$_c$ & $1.38 \times 10^7$ & Fully turbulent ($> 5 \times 10^5$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Boundary Layer}
+
+For a turbulent BL developing over a flat plate of length $c$:
+\begin{align}
+  \delta &= 0.37\,c\,\mathrm{Re}_c^{-1/5} \\
+  \delta^* &= \delta/8 \\
+  C_f &= 0.0592\,\mathrm{Re}_c^{-1/5} \\
+  u_\tau &= V_\mathrm{tip}\sqrt{C_f/2}
+\end{align}
+
+\begin{table}[H]
+\centering
+\caption{Blade boundary layer properties.}
+\label{tab:BL}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+BL thickness $\delta_1$ & 2.21 & mm \\
+Displacement thickness $\delta^*$ & 0.28 & mm \\
+Friction velocity $u_\tau$ & 0.84 & m/s \\
+Turbulence intensity $u'$ & 1.27 & m/s \\
+Eddy timescale $t_e = \delta/u'$ & 1.7 & ms \\
+Decay time $2\,t_e$ & 3.5 & ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Phase 1 Mechanisms Analysis}
+\label{sec:mechanisms}
+% ══════════════════════════════════════════════════════════════════════════════
+
+We analyze all potential sources of residual gas velocity from the blade rotation.
+
+\subsection{Mechanism 1: Turbulent Eddy Diffusion}
+
+After the blade stops, the momentum in the boundary layer can diffuse
+vertically into the quiescent gas above. The evolution is governed by:
+\begin{equation}
+  \frac{\partial u}{\partial t} = \frac{\partial}{\partial z}
+    \left[\nu_\mathrm{eff}(z,t)\frac{\partial u}{\partial z}\right]
+\end{equation}
+
+The turbulent viscosity decays exponentially after motion stops:
+\begin{equation}
+  \nu_t(z,t) = \nu_t(z,0)\exp\left(-\frac{t}{2t_e}\right)
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Turbulent diffusion parameters.}
+\label{tab:diffusion}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Outer turbulent viscosity $\nu_t$ & $1.26 \times 10^{-4}$ & m$^2$/s \\
+Ratio $\nu_t/\nu$ & 430 & --- \\
+Turbulent reach $\ell_\mathrm{turb}$ & 0.66 & mm \\
+Molecular reach $\ell_\mathrm{mol}$ & 0.38 & mm \\
+Max reach from BL top & 3.3 & mm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result:} Momentum is confined within $\sim$3 mm of the blade surface.
+
+
+\subsection{Mechanism 2: Bulk Swirl and Angular Momentum}
+
+The drag on the blades deposits tangential momentum into the gas:
+\begin{equation}
+  \tau_\mathrm{drag} = n \int_0^R r \cdot \tfrac{1}{2}\rho[\omega r]^2 c\, C_d\, dr
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Bulk swirl parameters.}
+\label{tab:swirl}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Drag torque $\tau_\mathrm{drag}$ & 47.7 & N$\cdot$m \\
+Angular impulse $J$ & 18.9 & N$\cdot$m$\cdot$s \\
+Molecular diffusion time $t_\mathrm{visc}$ & 26.5 & s \\
+Ekman spin-up time (molecular) & 736 & s \\
+Ekman spin-up time (turbulent) & 39 & s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result:} Momentum stays confined to blade plane. No transport
+within the $\sim$2 s cycle time.
+
+
+\subsection{Mechanism 3: Displacement (Potential) Flow}
+
+The NACA\,0012 blade has finite thickness $t_\mathrm{max} = 0.12c$. As it
+moves through the gas, it displaces fluid. When the blade stops, the
+potential flow field propagates away at the speed of sound.
+
+\begin{table}[H]
+\centering
+\caption{Potential flow parameters.}
+\label{tab:potential}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Displacement velocity (during sweep) & 20.0 & m/s \\
+Acoustic clearing time $t_\mathrm{acoustic}$ & 9.0 & ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result:} Potential flow clears in $\sim$9 ms. Zero residual.
+
+
+\subsection{Mechanism 4: Pressure Pulse from Deceleration}
+
+When the blade decelerates to rest, the change in momentum creates a
+pressure transient:
+\begin{align}
+  \Delta p &\sim \rho V_\mathrm{tip}^2 \\
+  \Delta u &\sim \frac{\Delta p}{\rho c_s} = \frac{V_\mathrm{tip}^2}{c_s}
+\end{align}
+
+\begin{table}[H]
+\centering
+\caption{Pressure pulse parameters.}
+\label{tab:pressure}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Pressure perturbation $\Delta p$ & 51.0 & kPa \\
+Fractional $\Delta p/P$ & 3.4\% & --- \\
+Induced acoustic velocity $\Delta u$ & 3.6 & m/s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result:} Transient pulse passes through observation region. Zero residual.
+
+
+\subsection{Mechanism 5: Secondary Flows}
+
+\paragraph{Tip Clearance Flow.}
+For NACA\,0012 at $\alpha = 0$: there is \emph{no lift}, hence \emph{no
+pressure difference} across the blade.
+
+\paragraph{Centrifugal Effects.}
+The tangential wake flows \emph{along} the cylindrical wall, not into it.
+There is no face-on impingement to deflect flow into the axial direction.
+
+\begin{table}[H]
+\centering
+\caption{Secondary flow parameters.}
+\label{tab:secondary}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Tip gap & 5.0 & mm \\
+Centrifugal acceleration & 101 & m/s$^2$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result:} No mechanism for axial momentum transport. Zero residual.
+
+
+\subsection{Mechanism 6: Vortex Shedding}
+
+For a \emph{non-lifting} blade ($\alpha = 0$), there is no net circulation,
+hence no macroscopic starting/stopping vortex. NACA\,0012 at zero angle
+of attack is streamlined: coherent vortex shedding is strongly suppressed.
+
+\textbf{Result:} Any shed vortices confined to blade plane. Zero residual.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Phase 2: Carrier Radial Slide}
+\label{sec:phase2}
+% ══════════════════════════════════════════════════════════════════════════════
+
+After rotation, the carrier plate slides radially along the blade arm.
+
+\begin{table}[H]
+\centering
+\caption{Phase 2 kinematics.}
+\label{tab:phase2_kin}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Slide distance $\Delta r$ & 0.8 & m \\
+Slide time $t_\mathrm{slide}$ & 200 & ms \\
+Peak velocity $V_\mathrm{slide}$ & 8.0 & m/s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Carrier boundary layer properties.}
+\label{tab:carrier_BL}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Carrier Reynolds number Re$_L$ & $4.4 \times 10^6$ & --- \\
+BL thickness $\delta_2$ & 2.78 & mm \\
+Decay time $2t_e$ & 14 & ms \\
+Max reach & 4.0 & mm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result:} Same analysis as blade BL. Momentum confined within
+$\sim$4 mm of the carrier surface.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Phase 3: Vertical Lift and Quiescence}
+\label{sec:phase3}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Lift Kinematics}
+
+\begin{table}[H]
+\centering
+\caption{Phase 3 kinematics.}
+\label{tab:phase3_kin}
+\begin{tabular}{lll}
+\toprule
+Quantity & Value & Units \\
+\midrule
+Lift height $z_\mathrm{lift}$ & 5.0 & mm \\
+Lift duration $t_\mathrm{lift}$ & 1.0 & s \\
+Lift acceleration $a_\mathrm{lift}$ & 0.020 & m/s$^2$ \\
+Peak lift velocity $V_\mathrm{lift}$ & 10.0 & mm/s \\
+Wait time $t_\mathrm{wait}$ & 0.5 & s \\
+Stokes layer thickness $\delta_3$ & 0.54 & mm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Three Velocity Profiles}
+
+After the lift, we evaluate three velocity profiles to determine quiescence:
+
+\paragraph{Profile 1: Blade BL Diffusion.}
+The blade boundary layer from Phase 1, evaluated at time
+$t = t_\mathrm{slide} + t_\mathrm{lift} + t_\mathrm{wait} = \SI{1.7}{s}$
+after rotation stopped. Since the turbulence decay time is only \SI{3.5}{ms},
+this profile is \textbf{fully decayed} by the evaluation time.
+
+\paragraph{Profile 2: Carrier Slide BL Diffusion.}
+The carrier boundary layer from Phase 2, evaluated at time
+$t = t_\mathrm{lift} + t_\mathrm{wait} = \SI{1.5}{s}$ after the slide stopped.
+With a decay time of \SI{14}{ms}, this profile is also essentially decayed.
+
+\paragraph{Profile 3: Stokes Layer from Lift.}
+The boundary layer created by the vertical lift, evaluated at $t_\mathrm{wait}$
+after the lift stops. This follows the classical Stokes first problem
+(impulsively stopped plate):
+\begin{equation}
+  u(z, t) = V_\mathrm{lift}\,\mathrm{erfc}\!\left(\frac{z - z_\mathrm{lift}}{2\sqrt{\nu_\mathrm{eff}\,t}}\right)
+\end{equation}
+
+\subsection{Quiescence Heights}
+
+\begin{table}[H]
+\centering
+\caption{Quiescence heights for 2-arm propeller ($u_c = \SI{0.1}{mm/s}$).}
+\label{tab:quiescence}
+\begin{tabular}{llll}
+\toprule
+Profile & Description & $z_q$ & Note \\
+\midrule
+Profile 1 & Blade BL & \SI{0.1}{mm} & Fully decayed \\
+Profile 2 & Carrier slide BL & \SI{2.8}{mm} & Essentially decayed \\
+Profile 3 & Stokes layer & \SI{7.5}{mm} & Dominant contribution \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The dominant contribution is Profile 3 (Stokes layer from the vertical lift).
+Since the plate surface is at $z = z_\mathrm{lift} = \SI{5}{mm}$, the
+quiescence height $z_{q3} = \SI{7.5}{mm}$ is only \textbf{\SI{2.5}{mm} above
+the plate surface}.
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Summary of All Mechanisms}
+\label{sec:summary_mechanisms}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{table}[H]
+\centering
+\caption{Summary of all mechanisms for residual velocity (2-arm propeller).}
+\label{tab:all_mechanisms}
+\begin{tabular}{llc}
+\toprule
+Mechanism & Timescale & Result \\
+\midrule
+\multicolumn{3}{l}{\textit{Phase 1: Blade rotation}} \\
+1. Eddy diffusion & $2t_e \approx 3.5$ ms & $3.2 \times 10^{-7}$ m/s \\
+2. Bulk swirl & $t_\mathrm{visc} \approx 26$ s & 0 \\
+3. Potential flow & $t_\mathrm{acoustic} \approx 9$ ms & 0 \\
+4. Pressure pulse & $t_\mathrm{decel} \sim 10$ ms & 0 \\
+5. Secondary flows & $t_\mathrm{Ekman} \approx 39$ s & 0 \\
+6. Vortex shedding & N/A (confined) & 0 \\
+\midrule
+\multicolumn{3}{l}{\textit{Phase 2: Carrier slide}} \\
+7. Carrier eddy diff. & max reach $<$ 5 mm & 0 \\
+\midrule
+\multicolumn{3}{l}{\textit{Phase 3: Vertical lift (three profiles)}} \\
+8. Blade BL ($z_{q1}$) & eval at $t = 1.7$ s & \SI{0.1}{mm} \\
+9. Carrier BL ($z_{q2}$) & eval at $t = 1.5$ s & \SI{2.8}{mm} \\
+10. Stokes layer ($z_{q3}$) & eval at $t_\mathrm{wait}$ & \SI{7.5}{mm} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Timeline and Conclusion}
+\label{sec:conclusion}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Timeline}
+
+\begin{table}[H]
+\centering
+\caption{Complete motion timeline for 2-arm propeller.}
+\label{tab:timeline}
+\begin{tabular}{lll}
+\toprule
+Phase & Duration & Cumulative \\
+\midrule
+Phase 1: Blade rotation & \SI{396}{ms} & \SI{0.40}{s} \\
+Phase 2: Carrier slide & \SI{200}{ms} & \SI{0.60}{s} \\
+Phase 3: Vertical lift & \SI{1000}{ms} & \SI{1.60}{s} \\
+Wait period & \SI{500}{ms} & \SI{2.10}{s} \\
+\midrule
+\textbf{Total cycle time} & & \textbf{\SI{2.1}{s}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key Results}
+
+\begin{table}[H]
+\centering
+\caption{Summary of key parameters for 2-arm propeller.}
+\label{tab:summary}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Units \\
+\midrule
+\multicolumn{3}{l}{\textit{Peak velocities}} \\
+Blade tip velocity $V_\mathrm{tip}$ & 25.4 & m/s \\
+Carrier slide velocity $V_\mathrm{slide}$ & 8.0 & m/s \\
+Lift velocity $V_\mathrm{lift}$ & 10.0 & mm/s \\
+\midrule
+\multicolumn{3}{l}{\textit{Boundary layer thicknesses}} \\
+Blade BL $\delta_1$ & 2.21 & mm \\
+Carrier BL $\delta_2$ & 2.78 & mm \\
+Stokes layer $\delta_3$ & 0.54 & mm \\
+\midrule
+\multicolumn{3}{l}{\textit{Quiescence heights}} \\
+$z_{q1}$ (blade BL) & 0.1 & mm \\
+$z_{q2}$ (carrier BL) & 2.8 & mm \\
+$z_{q3}$ (Stokes layer) & 7.5 & mm \\
+\midrule
+\multicolumn{3}{l}{\textit{Timing}} \\
+Total cycle time & 2.1 & s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Conclusion}
+
+For the 2-arm propeller configuration, the gas above the lifted carrier
+plate becomes \textbf{quiescent} (velocity $< \SI{0.1}{mm/s}$) within the
+total cycle time of \textbf{\SI{2.1}{s}}.
+
+The fundamental reasons for rapid quiescence are:
+\begin{enumerate}[nosep]
+  \item The NACA\,0012 at zero angle of attack produces \textbf{no lift},
+    so all aerodynamic effects are confined to the thin drag wake within
+    $\delta \approx 2$--3 mm of the surface.
+  \item Dense xenon ($\rho \approx \SI{79}{kg/m^3}$) has very small
+    kinematic viscosity ($\nu \approx \SI{3e-7}{m^2/s}$), making diffusion
+    timescales very long---momentum stays confined.
+  \item Turbulent eddies decay rapidly ($\sim$\SI{3.5}{ms}) once motion stops.
+    By evaluation time ($\sim$1.5--1.7 s), both blade and carrier boundary
+    layers have fully decayed.
+  \item The slow lift velocity ($V_\mathrm{lift} = \SI{10}{mm/s}$) creates
+    only a thin Stokes layer ($\delta_3 \approx \SI{0.5}{mm}$).
+  \item The dominant residual flow is Profile 3 (Stokes layer), which gives
+    quiescence at $z_{q3} = \SI{7.5}{mm}$, just \textbf{\SI{2.5}{mm} above
+    the lifted plate surface}.
+\end{enumerate}
+
+\end{document}
